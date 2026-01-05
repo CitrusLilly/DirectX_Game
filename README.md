@@ -1,2 +1,2 @@
 # DirectX_Game
-DirectX11勉強用
+DirectX11の勉強用
