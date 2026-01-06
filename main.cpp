@@ -62,12 +62,18 @@ int APIENTRY WinMain(HINSTANCE hInstance,HINSTANCE hPrevInst,LPSTR lpCmdLine,int
 	
 	// ウィンドウ表示
 	ShowWindow(hWnd, nCmdShow);
-
+	
+	HRESULT hr;
 	// Direct3D初期化
-	Direct3D::Initialize(winW, winH, hWnd);
+	hr = Direct3D::Initialize(winW, winH, hWnd);
+	if(FAILED(hr)) {
+		PostQuitMessage(0);	// エラーが起きたら強制終了
+	}
 
 	pQuad = new Quad();
-	pQuad->Initialize();
+	if (FAILED(pQuad->Initialize())) {
+		return 0;
+	}
 
 	// メッセージループ
 	MSG msg;
@@ -89,7 +95,7 @@ int APIENTRY WinMain(HINSTANCE hInstance,HINSTANCE hPrevInst,LPSTR lpCmdLine,int
 	}
 
 	// 解放処理
-	pQuad->Release();
+	SAFE_DELETE(pQuad);
 	Direct3D::Release();
 
 	return 0;
