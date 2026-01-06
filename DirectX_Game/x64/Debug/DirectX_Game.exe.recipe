@@ -2,10 +2,14 @@
 <Project>
   <ProjectOutputs>
     <ProjectOutput>
-      <FullPath>C:\プログラム\Cpura\DirectX_Game\x64\Debug\DirectX_Game.exe</FullPath>
+      <FullPath>C:\Users\kazuk\Source\Repos\DirectX_Game\x64\Debug\DirectX_Game.exe</FullPath>
     </ProjectOutput>
   </ProjectOutputs>
-  <ContentFiles />
+  <ContentFiles>
+    <ContentFile>
+      <FullPath>C:\Users\kazuk\Source\Repos\DirectX_Game\x64\Debug\Simple3D.cso</FullPath>
+    </ContentFile>
+  </ContentFiles>
   <SatelliteDlls />
   <NonRecipeFileRefs />
 </Project>

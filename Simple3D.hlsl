@@ -12,13 +12,13 @@ cbuffer global
 //───────────────────────────────────
 struct VS_OUT
 {
-    float4 pos : SV_Position; // 頂点シェーダー出力位置
+    float4 pos : SV_POSITION; // 頂点シェーダー出力位置
 };
 
 //───────────────────────────────────
 // 頂点シェーダー
 //───────────────────────────────────
-VS_OUT VS(float4 pos : POSITIONT)
+VS_OUT VS(float4 pos : POSITION)
 {
     // ピクセルシェーダーへ渡す情報
     VS_OUT outData;
