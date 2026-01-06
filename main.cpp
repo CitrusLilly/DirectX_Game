@@ -2,6 +2,7 @@
 #include <Windows.h>
 #include <d3d11.h>
 #include "Direct3D.h"
+#include "Quad.h"
 
 // リンカ
 #pragma comment(lib,"d3d11.lib")
@@ -15,10 +16,7 @@
 // プロトタイプ宣言
 LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
-ID3D11Device*				pDevice;			// デバイス
-ID3D11DeviceContext*		pContext;			// デバイスコンテキスト
-IDXGISwapChain*				pSwapChain;			// スワップチェイン
-ID3D11RenderTargetView*		pRenderTargetView;	// レンダーターゲットビュー
+Quad* pQuad;
 
 // エントリーポイント
 int APIENTRY WinMain(HINSTANCE hInstance,HINSTANCE hPrevInst,LPSTR lpCmdLine,int nCmdShow) {
@@ -68,6 +66,9 @@ int APIENTRY WinMain(HINSTANCE hInstance,HINSTANCE hPrevInst,LPSTR lpCmdLine,int
 	// Direct3D初期化
 	Direct3D::Initialize(winW, winH, hWnd);
 
+	pQuad = new Quad();
+	pQuad->Initialize();
+
 	// メッセージループ
 	MSG msg;
 	ZeroMemory(&msg, sizeof(msg));
@@ -82,11 +83,13 @@ int APIENTRY WinMain(HINSTANCE hInstance,HINSTANCE hPrevInst,LPSTR lpCmdLine,int
 			// ゲーム処理
 			Direct3D::BeginDraw();
 			// 描画処理
+			pQuad->Draw();
 			Direct3D::EndDraw();
 		}
 	}
 
 	// 解放処理
+	pQuad->Release();
 	Direct3D::Release();
 
 	return 0;

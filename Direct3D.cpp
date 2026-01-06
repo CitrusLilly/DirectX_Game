@@ -162,41 +162,6 @@ void Direct3D::InitShader() {
 	pContext->PSSetShader(pPixelShader, NULL, 0);					// ピクセルシェーダーセット
 	pContext->IASetInputLayout(pVertexLayout);						// 頂点レイアウトセット
 	pContext->RSSetState(pRasterizerState);							// ラスタライザーステートセット
-
-
-
-
-	//// 頂点シェーダの作成（コンパイル）
-	//ID3DBlob* pCompileVS = nullptr;
-	//D3DCompileFromFile(L"Simple3D.hlsl", nullptr, nullptr, "VS", "vs_5_0", NULL, 0, &pCompileVS, NULL);
-	//pDevice->CreateVertexShader(pCompileVS->GetBufferPointer(), pCompileVS->GetBufferSize(), NULL, &pVertexShader);
-
-	////頂点インプットレイアウト
-	//D3D11_INPUT_ELEMENT_DESC layout[] = {
-	//	{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0,  D3D11_INPUT_PER_VERTEX_DATA, 0 },	//位置
-	//};
-	//pDevice->CreateInputLayout(layout, 1, pCompileVS->GetBufferPointer(), pCompileVS->GetBufferSize(), &pVertexLayout);
-
-	//pCompileVS->Release();
-
-	//// ピクセルシェーダの作成（コンパイル）
-	//ID3DBlob* pCompilePS = nullptr;
-	//D3DCompileFromFile(L"Simple3D.hlsl", nullptr, nullptr, "PS", "ps_5_0", NULL, 0, &pCompilePS, NULL);
-	//pDevice->CreatePixelShader(pCompilePS->GetBufferPointer(), pCompilePS->GetBufferSize(), NULL, &pPixelShader);
-	//pCompilePS->Release();
-
-	////ラスタライザ作成
-	//D3D11_RASTERIZER_DESC rdc = {};
-	//rdc.CullMode = D3D11_CULL_BACK;
-	//rdc.FillMode = D3D11_FILL_SOLID;
-	//rdc.FrontCounterClockwise = FALSE;
-	//pDevice->CreateRasterizerState(&rdc, &pRasterizerState);
-
-	////それぞれをデバイスコンテキストにセット
-	//pContext->VSSetShader(pVertexShader, NULL, 0);	//頂点シェーダー
-	//pContext->PSSetShader(pPixelShader, NULL, 0);	//ピクセルシェーダー
-	//pContext->IASetInputLayout(pVertexLayout);	//頂点インプットレイアウト
-
 }
 
 // 描画開始
