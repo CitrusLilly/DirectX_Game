@@ -1,5 +1,5 @@
 #include "Quad.h"
-
+#include "Camera.h"
 // コンストラクタ
 Quad::Quad()
 	: pVertexBuffer_(nullptr)
@@ -25,7 +25,7 @@ HRESULT Quad::Initialize() {
 	};
 
 	// 頂点バッファ作成
-	D3D11_BUFFER_DESC bd_vertex;
+	D3D11_BUFFER_DESC bd_vertex = {};
 	bd_vertex.ByteWidth = sizeof(vertices);			// バッファの大きさ
 	bd_vertex.Usage = D3D11_USAGE_DEFAULT;			// 使用方法
 	bd_vertex.BindFlags = D3D11_BIND_VERTEX_BUFFER;	// 頂点バッファとして使う
@@ -33,7 +33,7 @@ HRESULT Quad::Initialize() {
 	bd_vertex.MiscFlags = 0;						// その他オプション
 	bd_vertex.StructureByteStride = 0;				// 構造体のサイズ(不明でよい)
 
-	D3D11_SUBRESOURCE_DATA data_vertex;
+	D3D11_SUBRESOURCE_DATA data_vertex = {};
 	data_vertex.pSysMem = vertices; // 頂点データアドレス
 	hr = Direct3D::pDevice->CreateBuffer(&bd_vertex, &data_vertex, &pVertexBuffer_);
 	if(FAILED(hr)) {
@@ -45,14 +45,14 @@ HRESULT Quad::Initialize() {
 	int index[] = {0,2,3, 0,1,2};
 
 	// インデックスバッファ作成
-	D3D11_BUFFER_DESC bd;
+	D3D11_BUFFER_DESC bd = {};
 	bd.Usage = D3D11_USAGE_DEFAULT;				// 使用方法
 	bd.ByteWidth = sizeof(index);				// バッファの大きさ
 	bd.BindFlags = D3D11_BIND_INDEX_BUFFER;		// インデックスバッファとして使う
 	bd.CPUAccessFlags = 0;						// CPUからアクセスしない
 	bd.MiscFlags = 0;							// その他オプション
 
-	D3D11_SUBRESOURCE_DATA initData;
+	D3D11_SUBRESOURCE_DATA initData = {};
 	initData.pSysMem = index;			// インデックスデータアドレス
 	initData.SysMemPitch = 0;			// 1つのデータサイズ(不明でよい)
 	initData.SysMemSlicePitch = 0;		// 3Dテクスチャ用(不明でよい)
@@ -63,7 +63,7 @@ HRESULT Quad::Initialize() {
 	}
 
 	// コンスタントバッファ作成
-	D3D11_BUFFER_DESC cd;
+	D3D11_BUFFER_DESC cd = {};
 	cd.ByteWidth = sizeof(CONSTANT_BUFFER);		// バッファの大きさ
 	cd.Usage = D3D11_USAGE_DYNAMIC;				// 使用方法
 	cd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;	// コンスタントバッファとして使う
@@ -80,17 +80,11 @@ HRESULT Quad::Initialize() {
 }
 
 // 描画
-void Quad::Draw() {
+void Quad::Draw(XMMATRIX& wolrdMatrix) {
 	// コンスタントバッファに渡す情報
-	XMVECTOR position = { 0,3,-10,0 }; // カメラの位置
-	XMVECTOR target = { 0,0,0,0 };     // カメラの焦点
-	// ビュー行列 カメラの位置、注視点、上方向ベクトル
-	XMMATRIX view = XMMatrixLookAtLH(position, target, XMVectorSet(0, 1, 0, 0));
-	// プロジェクション行列 レンズの設定
-	XMMATRIX proj = XMMatrixPerspectiveFovLH(XM_PIDIV4, 800.0f / 600.0f, 0.1f, 100.0f);
-
-	CONSTANT_BUFFER cb;
-	cb.matWVP = XMMatrixTranspose(view * proj); // 行列の転置
+	CONSTANT_BUFFER cb = {};
+	// 行列の転置
+	cb.matWVP = XMMatrixTranspose(wolrdMatrix * Camera::GetViewMatrix() * Camera::GetProjectionMatrix());
 
 	D3D11_MAPPED_SUBRESOURCE pdata;
 	Direct3D::pContext->Map(		// GUPからのデータアクセスを止める

@@ -1,8 +1,4 @@
 ﻿  Direct3D.cpp
-  Quad.cpp
-  main.cpp
-  コードを生成中...
-  LINK : 前回のインクリメンタル リンクで C:\Users\kazuk\Source\Repos\DirectX_Game\x64\Debug\DirectX_Game.exe が見つからなかったか、ビルドされませんでした。フル リンクを行います。
   DirectX_Game.vcxproj -> C:\Users\kazuk\Source\Repos\DirectX_Game\x64\Debug\DirectX_Game.exe
   C:\Users\kazuk\source\repos\DirectX_Game\Simple3D.hlsl
           1 個のファイルをコピーしました。

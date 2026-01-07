@@ -3,6 +3,7 @@
 #include <d3d11.h>
 #include "Direct3D.h"
 #include "Quad.h"
+#include "Camera.h"
 
 // リンカ
 #pragma comment(lib,"d3d11.lib")
@@ -17,6 +18,7 @@
 LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 Quad* pQuad;
+float gAngle = 0.0f;
 
 // エントリーポイント
 int APIENTRY WinMain(HINSTANCE hInstance,HINSTANCE hPrevInst,LPSTR lpCmdLine,int nCmdShow) {
@@ -70,6 +72,9 @@ int APIENTRY WinMain(HINSTANCE hInstance,HINSTANCE hPrevInst,LPSTR lpCmdLine,int
 		PostQuitMessage(0);	// エラーが起きたら強制終了
 	}
 
+	// カメラ初期化
+	Camera::Initialize();
+
 	pQuad = new Quad();
 	if (FAILED(pQuad->Initialize())) {
 		return 0;
@@ -86,10 +91,14 @@ int APIENTRY WinMain(HINSTANCE hInstance,HINSTANCE hPrevInst,LPSTR lpCmdLine,int
 			DispatchMessage(&msg);
 		// メッセージなし
 		} else {
+			// カメラ更新
+			Camera::Update();
 			// ゲーム処理
 			Direct3D::BeginDraw();
 			// 描画処理
-			pQuad->Draw();
+			gAngle += 0.01f;
+			XMMATRIX mat = XMMatrixRotationY(XMConvertToRadians(gAngle));
+			pQuad->Draw(mat);
 			Direct3D::EndDraw();
 		}
 	}

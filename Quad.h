@@ -17,9 +17,9 @@ class Quad {
 	ID3D11Buffer* pIndexBuffer_;	// インデックスバッファ
 	ID3D11Buffer* pConstantBuffer_; // コンスタントバッファ
 public:
-	Quad();				// コンストラクタ
-	~Quad();			// デストラクタ
-	HRESULT Initialize();	// 初期化
-	void Draw();		// 描画
-	void Release();		// 解放
+	Quad();								// コンストラクタ
+	~Quad();							// デストラクタ
+	HRESULT Initialize();				// 初期化
+	void Draw(XMMATRIX& worldMatrix);	// 描画
+	void Release();						// 解放
 };
