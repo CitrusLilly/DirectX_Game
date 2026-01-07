@@ -14,8 +14,8 @@
 
 namespace Direct3D {
 	// 変数
-	extern ID3D11Device* pDevice;				// デバイス
-	extern ID3D11DeviceContext* pContext;		// デバイスコンテキスト
+	extern ID3D11Device* pDevice_;				// デバイス
+	extern ID3D11DeviceContext* pContext_;		// デバイスコンテキスト
 
 	// 初期化
 	HRESULT Initialize(int winW,int winH,HWND hWnd);

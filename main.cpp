@@ -18,7 +18,6 @@
 LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 Quad* pQuad;
-float gAngle = 0.0f;
 
 // エントリーポイント
 int APIENTRY WinMain(HINSTANCE hInstance,HINSTANCE hPrevInst,LPSTR lpCmdLine,int nCmdShow) {
@@ -96,8 +95,14 @@ int APIENTRY WinMain(HINSTANCE hInstance,HINSTANCE hPrevInst,LPSTR lpCmdLine,int
 			// ゲーム処理
 			Direct3D::BeginDraw();
 			// 描画処理
-			gAngle += 0.01f;
-			XMMATRIX mat = XMMatrixRotationY(XMConvertToRadians(gAngle));
+			static float angle = 0;
+			angle += 0.01f;
+			XMMATRIX matZ = XMMatrixRotationZ(XMConvertToRadians(angle));
+			XMMATRIX matY = XMMatrixRotationY(XMConvertToRadians(angle));
+			XMMATRIX mat = matY * matZ;
+			//XMMATRIX matT = XMMatrixTranslation(4.0f, 1.0f, 0.0f);
+			//XMMATRIX matS = XMMatrixScaling(1.0f, 3.0f, 1.0f);
+			//XMMATRIX mat = matT * matS;
 			pQuad->Draw(mat);
 			Direct3D::EndDraw();
 		}
