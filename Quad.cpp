@@ -6,6 +6,8 @@ Quad::Quad()
 	, pIndexBuffer_(nullptr)
 	, pConstantBuffer_(nullptr)
 	, pTexture_(nullptr)
+	, vertexNum_(0)
+	, indexNum_(0)
 {
 }
 
@@ -16,98 +18,38 @@ Quad::~Quad() {
 
 // 初期化
 HRESULT Quad::Initialize() {
-	// エラー処理用
-	HRESULT hr;
-	// 頂点データ作成
-	VERTEX vertices[] = {
-		{
-			XMVectorSet(-1.0f,1.0f,0.0f,0.0f),
-			XMVectorSet(0.0f,0.0f,0.0f,0.0f),
-			XMVectorSet(0.0f,0.0f,-1.0f,0.0f)
-		},	// 四角形の頂点(左上)
-		{
-			XMVectorSet(1.0f,1.0f,0.0f,0.0f),
-			XMVectorSet(1.0f,0.0f,0.0f,0.0f),
-			XMVectorSet(0.0f,0.0f,-1.0f,0.0f)
-		},	// 四角形の頂点(右上)
-		{
-			XMVectorSet(1.0f,-1.0f,0.0f,0.0f),
-			XMVectorSet(1.0f,1.0f,0.0f,0.0f),
-			XMVectorSet(0.0f,0.0f,-1.0f,0.0f)
-		},	// 四角形の頂点(右下)
-		{
-			XMVectorSet(-1.0f,-1.0f,0.0f,0.0f),
-			XMVectorSet(0.0f,1.0f,0.0f,0.0f),
-			XMVectorSet(0.0f,0.0f,1.0f,0.0f)
-		}	// 四角形の頂点(左下)
-	};
-
-	// 頂点バッファ作成
-	D3D11_BUFFER_DESC bd_vertex = {};
-	bd_vertex.ByteWidth = sizeof(vertices);			// バッファの大きさ
-	bd_vertex.Usage = D3D11_USAGE_DEFAULT;			// 使用方法
-	bd_vertex.BindFlags = D3D11_BIND_VERTEX_BUFFER;	// 頂点バッファとして使う
-	bd_vertex.CPUAccessFlags = 0;					// CPUからアクセスしない
-	bd_vertex.MiscFlags = 0;						// その他オプション
-	bd_vertex.StructureByteStride = 0;				// 構造体のサイズ(不明でよい)
-
-	D3D11_SUBRESOURCE_DATA data_vertex = {};
-	data_vertex.pSysMem = vertices; // 頂点データアドレス
-	hr = Direct3D::pDevice_->CreateBuffer(&bd_vertex, &data_vertex, &pVertexBuffer_);
-	if(FAILED(hr)) {
-		MessageBox(nullptr, L"頂点バッファの作成に失敗しました。", L"エラー", MB_OK);
+	// 頂点情報初期化
+	InitVertexData();
+	if(FAILED(CreateVertexBuffer())) {
 		return E_FAIL;
 	}
 
-	// インデックス情報
-	int index[] = {0,2,3, 0,1,2};
-
-	// インデックスバッファ作成
-	D3D11_BUFFER_DESC bd = {};
-	bd.Usage = D3D11_USAGE_DEFAULT;				// 使用方法
-	bd.ByteWidth = sizeof(index);				// バッファの大きさ
-	bd.BindFlags = D3D11_BIND_INDEX_BUFFER;		// インデックスバッファとして使う
-	bd.CPUAccessFlags = 0;						// CPUからアクセスしない
-	bd.MiscFlags = 0;							// その他オプション
-
-	D3D11_SUBRESOURCE_DATA initData = {};
-	initData.pSysMem = index;			// インデックスデータアドレス
-	initData.SysMemPitch = 0;			// 1つのデータサイズ(不明でよい)
-	initData.SysMemSlicePitch = 0;		// 3Dテクスチャ用(不明でよい)
-	hr = Direct3D::pDevice_->CreateBuffer(&bd, &initData, &pIndexBuffer_);
-	if(FAILED(hr)) {
-		MessageBox(nullptr, L"インデックスバッファの作成に失敗しました。", L"エラー", MB_OK);
+	// インデックス情報初期化
+	InitIndexData();
+	if(FAILED(CreateIndexBuffer())) {
 		return E_FAIL;
 	}
 
 	// コンスタントバッファ作成
-	D3D11_BUFFER_DESC cd = {};
-	cd.ByteWidth = sizeof(CONSTANT_BUFFER);		// バッファの大きさ
-	cd.Usage = D3D11_USAGE_DYNAMIC;				// 使用方法
-	cd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;	// コンスタントバッファとして使う
-	cd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;	// CPUからアクセスする
-	cd.MiscFlags = 0;							// その他オプション
-	cd.StructureByteStride = 0;					// 構造体のサイズ(不明でよい)
-	hr = Direct3D::pDevice_->CreateBuffer(&cd, nullptr, &pConstantBuffer_);
-	if(FAILED(hr)) {
-		MessageBox(nullptr, L"コンスタントバッファの作成に失敗しました。", L"エラー", MB_OK);
+	if(FAILED(CreateConstantBuffer())) {
 		return E_FAIL;
 	}
 
 	// テクスチャ読み込み
-	pTexture_ = new Texture();
-	pTexture_->Load("Assets\\dice.png");
+	if(FAILED(LoadTexture())) {
+		return E_FAIL;
+	}
 
 	return S_OK;
 }
 
 // 描画
-void Quad::Draw(XMMATRIX& wolrdMatrix) {
+void Quad::Draw(XMMATRIX& worldMatrix) {
 	// コンスタントバッファに渡す情報
 	CONSTANT_BUFFER cb = {};
 	// 行列の転置
-	cb.matWVP = XMMatrixTranspose(wolrdMatrix * Camera::GetViewMatrix() * Camera::GetProjectionMatrix());
-	cb.matW = XMMatrixTranspose(wolrdMatrix);
+	cb.matWVP = XMMatrixTranspose(worldMatrix * Camera::GetViewMatrix() * Camera::GetProjectionMatrix());
+	cb.matW = XMMatrixTranspose(worldMatrix);
 
 	D3D11_MAPPED_SUBRESOURCE pdata;
 	Direct3D::pContext_->Map(		// GUPからのデータアクセスを止める
@@ -119,9 +61,9 @@ void Quad::Draw(XMMATRIX& wolrdMatrix) {
 	);
 	memcpy_s(						// データ転送
 		pdata.pData,				// 書き込み先アドレス
-		sizeof(CONSTANT_BUFFER),	// 書き込み先サイズ
+		pdata.RowPitch,				// 書き込み先サイズ
 		&cb,						// 書き込み元アドレス
-		sizeof(CONSTANT_BUFFER)		// 書き込み元サイズ
+		sizeof(cb)					// 書き込み元サイズ
 	);
 
 	// ピクセルシェーダーにサンプラー設定
@@ -149,7 +91,7 @@ void Quad::Draw(XMMATRIX& wolrdMatrix) {
 	Direct3D::pContext_->PSSetConstantBuffers(0, 1, &pConstantBuffer_);	// ピクセルシェーダー用
 
 	// 描画
-	Direct3D::pContext_->DrawIndexed(6, 0, 0);
+	Direct3D::pContext_->DrawIndexed(indexNum_, 0, 0);
 }
 
 // 解放
@@ -161,4 +103,118 @@ void Quad::Release() {
 	SAFE_RELEASE(pConstantBuffer_);
 	SAFE_RELEASE(pIndexBuffer_);
 	SAFE_RELEASE(pVertexBuffer_);
+}
+
+// 頂点情報の初期化
+void Quad::InitVertexData() {
+	// 頂点データ作成
+	vertices_ = {
+		{
+			XMVectorSet(-1.0f,1.0f,0.0f,0.0f),
+			XMVectorSet(0.0f,0.0f,0.0f,0.0f),
+			XMVectorSet(0.0f,0.0f,-1.0f,0.0f)
+		},	// 四角形の頂点(左上)
+		{
+			XMVectorSet(1.0f,1.0f,0.0f,0.0f),
+			XMVectorSet(1.0f,0.0f,0.0f,0.0f),
+			XMVectorSet(0.0f,0.0f,-1.0f,0.0f)
+		},	// 四角形の頂点(右上)
+		{
+			XMVectorSet(1.0f,-1.0f,0.0f,0.0f),
+			XMVectorSet(1.0f,1.0f,0.0f,0.0f),
+			XMVectorSet(0.0f,0.0f,-1.0f,0.0f)
+		},	// 四角形の頂点(右下)
+		{
+			XMVectorSet(-1.0f,-1.0f,0.0f,0.0f),
+			XMVectorSet(0.0f,1.0f,0.0f,0.0f),
+			XMVectorSet(0.0f,0.0f,-1.0f,0.0f)
+		}	// 四角形の頂点(左下)
+	};
+
+	vertexNum_ = vertices_.size();
+}
+
+// 頂点バッファ作成
+HRESULT Quad::CreateVertexBuffer() {
+	HRESULT hr;
+	D3D11_BUFFER_DESC bd_vertex = {};
+	bd_vertex.ByteWidth = sizeof(VERTEX) * vertexNum_;	// バッファの大きさ
+	bd_vertex.Usage = D3D11_USAGE_DEFAULT;				// 使用方法
+	bd_vertex.BindFlags = D3D11_BIND_VERTEX_BUFFER;		// 頂点バッファとして使う
+	bd_vertex.CPUAccessFlags = 0;						// CPUからアクセスしない
+	bd_vertex.MiscFlags = 0;							// その他オプション
+	bd_vertex.StructureByteStride = 0;					// 構造体のサイズ(不明でよい)
+
+	D3D11_SUBRESOURCE_DATA data_vertex = {};
+	data_vertex.pSysMem = vertices_.data(); // 頂点データアドレス
+	hr = Direct3D::pDevice_->CreateBuffer(&bd_vertex, &data_vertex, &pVertexBuffer_);
+	if (FAILED(hr)) {
+		MessageBox(nullptr, L"頂点バッファの作成に失敗しました。", L"エラー", MB_OK);
+		return E_FAIL;
+	}
+
+	return S_OK;
+}
+
+// インデックス情報の初期化
+void Quad::InitIndexData() {
+	index_ = { 0,2,3, 0,1,2 };
+	indexNum_ = index_.size();
+}
+
+// インデックスバッファ作成
+HRESULT Quad::CreateIndexBuffer() {
+	D3D11_BUFFER_DESC bd = {};
+	bd.Usage = D3D11_USAGE_DEFAULT;				// 使用方法
+	bd.ByteWidth = sizeof(int) * indexNum_;		// バッファの大きさ
+	bd.BindFlags = D3D11_BIND_INDEX_BUFFER;		// インデックスバッファとして使う
+	bd.CPUAccessFlags = 0;						// CPUからアクセスしない
+	bd.MiscFlags = 0;							// その他オプション
+
+	D3D11_SUBRESOURCE_DATA initData = {};
+	initData.pSysMem = index_.data();			// インデックスデータアドレス
+	initData.SysMemPitch = 0;					// 1つのデータサイズ(不明でよい)
+	initData.SysMemSlicePitch = 0;				// 3Dテクスチャ用(不明でよい)
+
+	HRESULT hr;
+	hr = Direct3D::pDevice_->CreateBuffer(&bd, &initData, &pIndexBuffer_);
+	if (FAILED(hr)) {
+		MessageBox(nullptr, L"インデックスバッファの作成に失敗しました。", L"エラー", MB_OK);
+		return E_FAIL;
+	}
+
+	return S_OK;
+}
+
+// コンスタントバッファ作成
+HRESULT Quad::CreateConstantBuffer() {
+	D3D11_BUFFER_DESC cd = {};
+	cd.ByteWidth = sizeof(CONSTANT_BUFFER);		// バッファの大きさ
+	cd.Usage = D3D11_USAGE_DYNAMIC;				// 使用方法
+	cd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;	// コンスタントバッファとして使う
+	cd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;	// CPUからアクセスする
+	cd.MiscFlags = 0;							// その他オプション
+	cd.StructureByteStride = 0;					// 構造体のサイズ(不明でよい)
+
+	HRESULT hr;
+	hr = Direct3D::pDevice_->CreateBuffer(&cd, nullptr, &pConstantBuffer_);
+	if (FAILED(hr)) {
+		MessageBox(nullptr, L"コンスタントバッファの作成に失敗しました。", L"エラー", MB_OK);
+		return E_FAIL;
+	}
+
+	return S_OK;
+}
+
+// テクスチャ読み込み
+HRESULT Quad::LoadTexture() {
+	pTexture_ = new Texture();
+	HRESULT hr;
+	hr = pTexture_->Load("Assets\\dice.png");
+	if(FAILED(hr)) {
+		MessageBox(NULL, L"テクスチャの読み込みに失敗しました。", L"エラー", MB_OK);
+		return E_FAIL;
+	}
+
+	return S_OK;
 }

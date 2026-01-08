@@ -4,6 +4,7 @@
 #include "Direct3D.h"
 #include "Quad.h"
 #include "Camera.h"
+#include "Dice.h"
 
 // リンカ
 #pragma comment(lib,"d3d11.lib")
@@ -17,7 +18,8 @@
 // プロトタイプ宣言
 LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
-Quad* pQuad;
+//Quad* pQuad;
+Dice* pDice;
 
 // エントリーポイント
 int APIENTRY WinMain(HINSTANCE hInstance,HINSTANCE hPrevInst,LPSTR lpCmdLine,int nCmdShow) {
@@ -74,8 +76,12 @@ int APIENTRY WinMain(HINSTANCE hInstance,HINSTANCE hPrevInst,LPSTR lpCmdLine,int
 	// カメラ初期化
 	Camera::Initialize();
 
-	pQuad = new Quad();
-	if (FAILED(pQuad->Initialize())) {
+	//pQuad = new Quad();
+	//if (FAILED(pQuad->Initialize())) {
+	//	return 0;
+	//}
+	pDice = new Dice();
+	if (FAILED(pDice->Initialize())) {
 		return 0;
 	}
 
@@ -103,13 +109,17 @@ int APIENTRY WinMain(HINSTANCE hInstance,HINSTANCE hPrevInst,LPSTR lpCmdLine,int
 			//XMMATRIX matT = XMMatrixTranslation(4.0f, 1.0f, 0.0f);
 			//XMMATRIX matS = XMMatrixScaling(1.0f, 3.0f, 1.0f);
 			//XMMATRIX mat = matT * matS;
-			pQuad->Draw(mat);
+			
+			//pQuad->Draw(mat);
+			pDice->Draw(mat);
+
 			Direct3D::EndDraw();
 		}
 	}
 
 	// 解放処理
-	SAFE_DELETE(pQuad);
+	//SAFE_DELETE(pQuad);
+	SAFE_DELETE(pDice);
 	Direct3D::Release();
 
 	return 0;

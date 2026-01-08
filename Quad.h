@@ -3,6 +3,7 @@
 #include <DirectXMath.h>
 #include "Direct3D.h"
 #include "Texture.h"
+#include <vector>
 
 using namespace DirectX;
 
@@ -20,6 +21,12 @@ struct VERTEX {
 };
 
 class Quad {
+protected:
+	int vertexNum_;	// 頂点数
+	std::vector<VERTEX> vertices_; // 頂点データ配列
+	int indexNum_;	// インデックス数
+	std::vector<int> index_; // インデックスデータ配列
+
 	// ポインタは初めにnullptrで初期化しておく
 	// 最後に解放を忘れずに！
 	ID3D11Buffer* pVertexBuffer_;	// 頂点バッファ
@@ -33,4 +40,11 @@ public:
 	HRESULT Initialize();				// 初期化
 	void Draw(XMMATRIX& worldMatrix);	// 描画
 	void Release();						// 解放
+private:
+	virtual void InitVertexData();		// 頂点情報の初期化
+	HRESULT CreateVertexBuffer();		// 頂点バッファ作成
+	virtual void InitIndexData();		// インデックス情報の初期化
+	HRESULT CreateIndexBuffer();		// インデックスバッファ作成
+	HRESULT CreateConstantBuffer();		// コンスタントバッファ作成
+	HRESULT LoadTexture();				// テクスチャ読み込み
 };

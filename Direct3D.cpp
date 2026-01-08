@@ -5,14 +5,14 @@
 // 変数
 namespace Direct3D {
 	ID3D11Device*			pDevice_ = nullptr;				// デバイス
-	ID3D11DeviceContext*	pContext_ = nullptr;				// デバイスコンテキスト
+	ID3D11DeviceContext*	pContext_ = nullptr;			// デバイスコンテキスト
 	IDXGISwapChain*			pSwapChain_ = nullptr;			// スワップチェイン
 	ID3D11RenderTargetView* pRenderTargetView_ = nullptr;	// レンダーターゲットビュー
 
 	ID3D11VertexShader*		pVertexShader_ = nullptr;		// 頂点シェーダー
-	ID3D11PixelShader*		pPixelShader_ = nullptr;			// ピクセルシェーダー
+	ID3D11PixelShader*		pPixelShader_ = nullptr;		// ピクセルシェーダー
 	ID3D11InputLayout*		pVertexLayout_ = nullptr;		// 頂点レイアウト
-	ID3D11RasterizerState*	pRasterizerState_ = nullptr;		// ラスタライザーステート
+	ID3D11RasterizerState*	pRasterizerState_ = nullptr;	// ラスタライザーステート
 }
 
 // 初期化
@@ -183,7 +183,7 @@ HRESULT Direct3D::InitShader() {
 	// ラスタライザーステート作成
 	D3D11_RASTERIZER_DESC rdc = {};
 	// 描画する面の設定
-	rdc.CullMode = D3D11_CULL_NONE;				// 背面カリング
+	rdc.CullMode = D3D11_CULL_BACK;				// 背面カリング
 	rdc.FillMode = D3D11_FILL_SOLID;			// 塗りつぶし
 	rdc.FrontCounterClockwise = FALSE;			// 頂点は時計回りが表
 	hr = pDevice_->CreateRasterizerState(&rdc, &pRasterizerState_);

@@ -1,4 +1,14 @@
-﻿  Direct3D.cpp
+﻿C:\Users\kazuk\source\repos\DirectX_Game\Simple3D.hlsl(39,5-19): warning X3206: implicit truncation of vector type
+  
+  compilation object save succeeded; see C:\Users\kazuk\Source\Repos\DirectX_Game\x64\Debug\Simple3D.cso
+  Dice.cpp
+C:\Users\kazuk\source\repos\DirectX_Game\Dice.cpp(40,29): warning C4267: '=': 'size_t' から 'int' に変換しました。データが失われているかもしれません。
+C:\Users\kazuk\source\repos\DirectX_Game\Dice.cpp(61,25): warning C4267: '=': 'size_t' から 'int' に変換しました。データが失われているかもしれません。
+  Quad.cpp
+C:\Users\kazuk\source\repos\DirectX_Game\Quad.cpp(134,29): warning C4267: '=': 'size_t' から 'int' に変換しました。データが失われているかもしれません。
+C:\Users\kazuk\source\repos\DirectX_Game\Quad.cpp(162,25): warning C4267: '=': 'size_t' から 'int' に変換しました。データが失われているかもしれません。
+  main.cpp
+  コードを生成中...
   DirectX_Game.vcxproj -> C:\Users\kazuk\Source\Repos\DirectX_Game\x64\Debug\DirectX_Game.exe
   C:\Users\kazuk\source\repos\DirectX_Game\Simple3D.hlsl
           1 個のファイルをコピーしました。
