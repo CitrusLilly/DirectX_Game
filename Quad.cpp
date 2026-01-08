@@ -20,10 +20,26 @@ HRESULT Quad::Initialize() {
 	HRESULT hr;
 	// 頂点データ作成
 	VERTEX vertices[] = {
-		{XMVectorSet(-1.0f,1.0f,0.0f,0.0f),XMVectorSet(0.0f,0.0f,0.0f,0.0f)},	// 四角形の頂点(左上)
-		{XMVectorSet(1.0f,1.0f,0.0f,0.0f), XMVectorSet(1.0f,0.0f,0.0f,0.0f)},	// 四角形の頂点(右上)
-		{XMVectorSet(1.0f,-1.0f,0.0f,0.0f),XMVectorSet(1.0f,1.0f,0.0f,0.0f)},	// 四角形の頂点(右下)
-		{XMVectorSet(-1.0f,-1.0f,0.0f,0.0f),XMVectorSet(0.0f,1.0f,0.0f,0.0f)}	// 四角形の頂点(左下)
+		{
+			XMVectorSet(-1.0f,1.0f,0.0f,0.0f),
+			XMVectorSet(0.0f,0.0f,0.0f,0.0f),
+			XMVectorSet(0.0f,0.0f,-1.0f,0.0f)
+		},	// 四角形の頂点(左上)
+		{
+			XMVectorSet(1.0f,1.0f,0.0f,0.0f),
+			XMVectorSet(1.0f,0.0f,0.0f,0.0f),
+			XMVectorSet(0.0f,0.0f,-1.0f,0.0f)
+		},	// 四角形の頂点(右上)
+		{
+			XMVectorSet(1.0f,-1.0f,0.0f,0.0f),
+			XMVectorSet(1.0f,1.0f,0.0f,0.0f),
+			XMVectorSet(0.0f,0.0f,-1.0f,0.0f)
+		},	// 四角形の頂点(右下)
+		{
+			XMVectorSet(-1.0f,-1.0f,0.0f,0.0f),
+			XMVectorSet(0.0f,1.0f,0.0f,0.0f),
+			XMVectorSet(0.0f,0.0f,1.0f,0.0f)
+		}	// 四角形の頂点(左下)
 	};
 
 	// 頂点バッファ作成
@@ -91,6 +107,7 @@ void Quad::Draw(XMMATRIX& wolrdMatrix) {
 	CONSTANT_BUFFER cb = {};
 	// 行列の転置
 	cb.matWVP = XMMatrixTranspose(wolrdMatrix * Camera::GetViewMatrix() * Camera::GetProjectionMatrix());
+	cb.matW = XMMatrixTranspose(wolrdMatrix);
 
 	D3D11_MAPPED_SUBRESOURCE pdata;
 	Direct3D::pContext_->Map(		// GUPからのデータアクセスを止める

@@ -101,6 +101,8 @@ HRESULT Direct3D::Initialize(int winW, int winH, HWND hWnd) {
 
 // シェーダー初期化
 HRESULT Direct3D::InitShader() {
+	using namespace DirectX;
+
 	// エラー処理用
 	HRESULT hr;
 	// シェーダーのコンパイル
@@ -133,11 +135,12 @@ HRESULT Direct3D::InitShader() {
 	// 頂点レイアウト作成
 	D3D11_INPUT_ELEMENT_DESC layout[]={
 		{ "POSITION",0,DXGI_FORMAT_R32G32B32_FLOAT,0,0,D3D11_INPUT_PER_VERTEX_DATA,0 },	// 頂点座標
-		{ "TEXCOORD",0,DXGI_FORMAT_R32G32_FLOAT,0,sizeof(DirectX::XMVECTOR),D3D11_INPUT_PER_VERTEX_DATA,0}, // UV座標
+		{ "TEXCOORD",0,DXGI_FORMAT_R32G32_FLOAT,0,sizeof(XMVECTOR),D3D11_INPUT_PER_VERTEX_DATA,0}, // UV座標
+		{ "NORMAL",0, DXGI_FORMAT_R32G32B32A32_FLOAT,0,sizeof(XMVECTOR) * 2,D3D11_INPUT_PER_VERTEX_DATA,0}, // 法線
 	};
 	hr = pDevice_->CreateInputLayout(
 		layout,							// 頂点レイアウト構造体
-		2,								// 頂点レイアウト数
+		3,								// 頂点レイアウト数
 		pVSBlob->GetBufferPointer(),	// 頂点シェーダーバイナリ
 		pVSBlob->GetBufferSize(),		// バイナリサイズ
 		&pVertexLayout_					// 完成した頂点レイアウト
@@ -179,6 +182,7 @@ HRESULT Direct3D::InitShader() {
 
 	// ラスタライザーステート作成
 	D3D11_RASTERIZER_DESC rdc = {};
+	// 描画する面の設定
 	rdc.CullMode = D3D11_CULL_NONE;				// 背面カリング
 	rdc.FillMode = D3D11_FILL_SOLID;			// 塗りつぶし
 	rdc.FrontCounterClockwise = FALSE;			// 頂点は時計回りが表

@@ -8,13 +8,15 @@ using namespace DirectX;
 
 // コンスタントバッファー
 struct CONSTANT_BUFFER {
-	XMMATRIX matWVP;
+	XMMATRIX matWVP;	// ワールドビュー・プロジェクション行列
+	XMMATRIX matW;		// ワールド行列
 };
 
 // 頂点情報
 struct VERTEX {
 	XMVECTOR position;	// 頂点座標
 	XMVECTOR uv;		// UV座標
+	XMVECTOR normal;	// 法線ベクトル
 };
 
 class Quad {
