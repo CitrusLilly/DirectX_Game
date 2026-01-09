@@ -3,6 +3,7 @@
 // インクルード
 #include <d3d11.h>
 #include <assert.h>
+#include <DirectXMath.h>
 
 // リンカ
 #pragma comment(lib,"d3d11.lib")
