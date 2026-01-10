@@ -13,6 +13,14 @@
 #define SAFE_RELEASE(p) if(p) { p->Release(); p = nullptr; }	// 安全に解放
 #define SAFE_DELETE(p) if(p) { delete p; p = nullptr;}			// 安全に削除
 
+using namespace DirectX;
+
+enum SHADER_TYPE {
+	SHADER_2D,
+	SHADER_3D,
+	SHADER_MAX,
+};
+
 namespace Direct3D {
 	// 変数
 	extern ID3D11Device* pDevice_;				// デバイス
@@ -22,6 +30,9 @@ namespace Direct3D {
 	HRESULT Initialize(int winW,int winH,HWND hWnd);
 	// シェーダー初期化
 	HRESULT InitShader();
+	HRESULT InitShader3D();
+	HRESULT InitShader2D();
+	void SetShader(SHADER_TYPE type);
 	// 描画開始
 	void BeginDraw();
 	// 描画終了

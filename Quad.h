@@ -10,7 +10,7 @@ using namespace DirectX;
 // コンスタントバッファー
 struct CONSTANT_BUFFER {
 	XMMATRIX matWVP;	// ワールドビュー・プロジェクション行列
-	XMMATRIX matW;		// ワールド行列
+	XMMATRIX matNormal;	// ワールド行列
 };
 
 // 頂点情報
@@ -47,4 +47,8 @@ private:
 	HRESULT CreateIndexBuffer();		// インデックスバッファ作成
 	HRESULT CreateConstantBuffer();		// コンスタントバッファ作成
 	HRESULT LoadTexture();				// テクスチャ読み込み
+
+	// ────────────Draw関数から呼ばれる関数────────────────────
+	void PassDataToCB(XMMATRIX& worldMatrix);	// コンスタントバッファにデータを送る
+	void SetBufferToPipeline();					// パイプラインに各種バッファをセットする
 };

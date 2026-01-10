@@ -45,53 +45,16 @@ HRESULT Quad::Initialize() {
 
 // 描画
 void Quad::Draw(XMMATRIX& worldMatrix) {
-	// コンスタントバッファに渡す情報
-	CONSTANT_BUFFER cb = {};
-	// 行列の転置
-	cb.matWVP = XMMatrixTranspose(worldMatrix * Camera::GetViewMatrix() * Camera::GetProjectionMatrix());
-	cb.matW = XMMatrixTranspose(worldMatrix);
+	Direct3D::SetShader(SHADER_3D);
 
-	D3D11_MAPPED_SUBRESOURCE pdata;
-	Direct3D::pContext_->Map(		// GUPからのデータアクセスを止める
-		pConstantBuffer_,			// マップするバッファ
-		0,							// サブリソース
-		D3D11_MAP_WRITE_DISCARD,	// 書き込み方法
-		0,							// 追加オプション
-		&pdata						// 書き込み先情報
-	);
-	memcpy_s(						// データ転送
-		pdata.pData,				// 書き込み先アドレス
-		pdata.RowPitch,				// 書き込み先サイズ
-		&cb,						// 書き込み元アドレス
-		sizeof(cb)					// 書き込み元サイズ
-	);
+	// コンスタントバッファに情報を渡す
+	PassDataToCB(worldMatrix);
 
-	// ピクセルシェーダーにサンプラー設定
-	ID3D11SamplerState* pSampler = pTexture_->GetSampler();
-	Direct3D::pContext_->PSSetSamplers(0, 1, &pSampler);
-
-	// ピクセルシェーダーにテクスチャ設定
-	ID3D11ShaderResourceView* pSRV = pTexture_->GetSRV();
-	Direct3D::pContext_->PSSetShaderResources(0, 1, &pSRV);
-
-	Direct3D::pContext_->Unmap(pConstantBuffer_, 0); // GUPからのデータアクセスを再開
-
-	// 頂点バッファセット
-	UINT stride = sizeof(VERTEX);	// 1頂点あたりのサイズ
-	UINT offset = 0;                // バッファの先頭から使う
-	Direct3D::pContext_->IASetVertexBuffers(0, 1, &pVertexBuffer_, &stride, &offset);
-
-	// インデックスバッファセット
-	stride = sizeof(int);	// 1インデックスあたりのサイズ
-	offset = 0;				// バッファの先頭から使う
-	Direct3D::pContext_->IASetIndexBuffer(pIndexBuffer_, DXGI_FORMAT_R32_UINT, offset);
-
-	// コンスタントバッファセット
-	Direct3D::pContext_->VSSetConstantBuffers(0, 1, &pConstantBuffer_);	// 頂点シェーダー用
-	Direct3D::pContext_->PSSetConstantBuffers(0, 1, &pConstantBuffer_);	// ピクセルシェーダー用
+	// パイプラインに各種バッファをセットする
+	SetBufferToPipeline();
 
 	// 描画
-	Direct3D::pContext_->DrawIndexed(indexNum_, 0, 0);
+	Direct3D::pContext_->DrawIndexed(index_.size(), 0, 0);
 }
 
 // 解放
@@ -217,4 +180,58 @@ HRESULT Quad::LoadTexture() {
 	}
 
 	return S_OK;
+}
+
+// コンスタントバッファに情報を渡す
+void Quad::PassDataToCB(XMMATRIX& worldMatrix) {
+	// コンスタントバッファに渡す情報
+	CONSTANT_BUFFER cb = {};
+	// 行列の転置
+	cb.matWVP = XMMatrixTranspose(worldMatrix * Camera::GetViewMatrix() * Camera::GetProjectionMatrix());
+	cb.matNormal = XMMatrixTranspose(worldMatrix);
+
+	D3D11_MAPPED_SUBRESOURCE pdata;
+	Direct3D::pContext_->Map(		// GUPからのデータアクセスを止める
+		pConstantBuffer_,			// マップするバッファ
+		0,							// サブリソース
+		D3D11_MAP_WRITE_DISCARD,	// 書き込み方法
+		0,							// 追加オプション
+		&pdata						// 書き込み先情報
+	);
+	memcpy_s(						// データ転送
+		pdata.pData,				// 書き込み先アドレス
+		pdata.RowPitch,				// 書き込み先サイズ
+		(void*)(&cb),				// 書き込み元アドレス
+		sizeof(cb)					// 書き込み元サイズ
+	);
+
+	// ピクセルシェーダーにサンプラー設定
+	ID3D11SamplerState* pSampler = pTexture_->GetSampler();
+	Direct3D::pContext_->PSSetSamplers(0, 1, &pSampler);
+
+	// ピクセルシェーダーにテクスチャ設定
+	ID3D11ShaderResourceView* pSRV = pTexture_->GetSRV();
+	Direct3D::pContext_->PSSetShaderResources(0, 1, &pSRV);
+
+	Direct3D::pContext_->Unmap(pConstantBuffer_, 0); // GUPからのデータアクセスを再開
+
+}
+
+// パイプラインに各種バッファをセットする
+void Quad::SetBufferToPipeline() {
+	// 頂点バッファセット
+	UINT stride = sizeof(VERTEX);	// 1頂点あたりのサイズ
+	UINT offset = 0;                // バッファの先頭から使う
+	Direct3D::pContext_->IASetVertexBuffers(0, 1, &pVertexBuffer_, &stride, &offset);
+
+	// インデックスバッファセット
+	stride = sizeof(int);	// 1インデックスあたりのサイズ
+	offset = 0;				// バッファの先頭から使う
+	Direct3D::pContext_->IASetIndexBuffer(pIndexBuffer_, DXGI_FORMAT_R32_UINT, offset);
+
+	// コンスタントバッファセット
+	Direct3D::pContext_->VSSetConstantBuffers(0, 1, &pConstantBuffer_);	// 頂点シェーダー用
+	Direct3D::pContext_->PSSetConstantBuffers(0, 1, &pConstantBuffer_);	// ピクセルシェーダー用
+
+	Direct3D::pContext_->DrawIndexed(indexNum_, 0, 0);
 }

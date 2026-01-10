@@ -10,10 +10,13 @@ namespace Direct3D {
 	IDXGISwapChain*			pSwapChain_ = nullptr;			// スワップチェイン
 	ID3D11RenderTargetView* pRenderTargetView_ = nullptr;	// レンダーターゲットビュー
 
-	ID3D11VertexShader*		pVertexShader_ = nullptr;		// 頂点シェーダー
-	ID3D11PixelShader*		pPixelShader_ = nullptr;		// ピクセルシェーダー
-	ID3D11InputLayout*		pVertexLayout_ = nullptr;		// 頂点レイアウト
-	ID3D11RasterizerState*	pRasterizerState_ = nullptr;	// ラスタライザーステート
+	struct SHADER_BUNDLE {
+		ID3D11VertexShader* pVertexShader_ = nullptr;		// 頂点シェーダー
+		ID3D11PixelShader* pPixelShader_ = nullptr;		// ピクセルシェーダー
+		ID3D11InputLayout* pVertexLayout_ = nullptr;		// 頂点レイアウト
+		ID3D11RasterizerState* pRasterizerState_ = nullptr;	// ラスタライザーステート
+	};
+	SHADER_BUNDLE shaderBundle[SHADER_MAX];
 }
 
 // 初期化
@@ -102,98 +105,119 @@ HRESULT Direct3D::Initialize(int winW, int winH, HWND hWnd) {
 
 // シェーダー初期化
 HRESULT Direct3D::InitShader() {
-	using namespace DirectX;
+	// 3Dシェーダー初期化
+	if (FAILED(InitShader3D())) {
+		return E_FAIL;
+	}
+
+	// 2Dシェーダー初期化
+	if(FAILED(InitShader2D())) {
+		return E_FAIL;
+	}
+
+	return S_OK;
+}
+
+// 3Dシェーダー初期化
+HRESULT Direct3D::InitShader3D() {
+	using namespace Direct3D;
 
 	// エラー処理用
 	HRESULT hr;
-	//// シェーダーのコンパイル
-	//ID3DBlob* pVSBlob = nullptr;	// 頂点シェーダーバイナリ格納用
-	//ID3DBlob* pPSBlob = nullptr;	// ピクセルシェーダーバイナリ格納用
-	//// 頂点シェーダーコンパイル
-	//D3DCompileFromFile(
-	//	L"Simple3D.hlsl",		// シェーダーファイル名
-	//	nullptr,				// 定義マクロ
-	//	nullptr,				// インクルード方法
-	//	"VS",					// エントリーポイント関数名
-	//	"vs_5_0",				// シェーダーモデル指定
-	//	NULL,					// コンパイルオプション
-	//	0,						// 追加オプション
-	//	&pVSBlob,				// 成功時にバイナリが入る
-	//	nullptr					// エラー時にエラー内容が入る
-	//);
-	//assert(pVSBlob != nullptr); // コンパイル失敗してたら止める
-	//hr = pDevice_->CreateVertexShader(
-	//	pVSBlob->GetBufferPointer(),	// 頂点シェーダーバイナリ
-	//	pVSBlob->GetBufferSize(),		// バイナリサイズ
-	//	NULL,							// なんかよくわからん
-	//	&pVertexShader_					// 完成した頂点シェーダー
-	//);
-	//if(FAILED(hr)) {
-	//	MessageBox(nullptr, L"頂点シェーダーの作成に失敗しました。", L"エラー", MB_OK);
-	//	return E_FAIL;
-	//}
+	// シェーダーのコンパイル
+	ID3DBlob* pVSBlob = nullptr;	// 頂点シェーダーバイナリ格納用
+	ID3DBlob* pPSBlob = nullptr;	// ピクセルシェーダーバイナリ格納用
+	// 頂点シェーダーコンパイル
+	D3DCompileFromFile(
+		L"Simple3D.hlsl",		// シェーダーファイル名
+		nullptr,				// 定義マクロ
+		nullptr,				// インクルード方法
+		"VS",					// エントリーポイント関数名
+		"vs_5_0",				// シェーダーモデル指定
+		NULL,					// コンパイルオプション
+		0,						// 追加オプション
+		&pVSBlob,				// 成功時にバイナリが入る
+		nullptr					// エラー時にエラー内容が入る
+	);
+	assert(pVSBlob != nullptr); // コンパイル失敗してたら止める
+	hr = pDevice_->CreateVertexShader(
+		pVSBlob->GetBufferPointer(),				// 頂点シェーダーバイナリ
+		pVSBlob->GetBufferSize(),					// バイナリサイズ
+		NULL,										// なんかよくわからん
+		&(shaderBundle[SHADER_3D].pVertexShader_)	// 完成した頂点シェーダー
+	);
+	if(FAILED(hr)) {
+		MessageBox(nullptr, L"頂点シェーダーの作成に失敗しました。", L"エラー", MB_OK);
+		return E_FAIL;
+	}
 
-	//// 頂点レイアウト作成
-	//D3D11_INPUT_ELEMENT_DESC layout[]={
-	//	{ "POSITION",0,DXGI_FORMAT_R32G32B32_FLOAT,0,0,D3D11_INPUT_PER_VERTEX_DATA,0 },	// 頂点座標
-	//	{ "TEXCOORD",0,DXGI_FORMAT_R32G32_FLOAT,0,sizeof(XMVECTOR),D3D11_INPUT_PER_VERTEX_DATA,0}, // UV座標
-	//	{ "NORMAL",0, DXGI_FORMAT_R32G32B32A32_FLOAT,0,sizeof(XMVECTOR) * 2,D3D11_INPUT_PER_VERTEX_DATA,0}, // 法線
-	//};
-	//hr = pDevice_->CreateInputLayout(
-	//	layout,							// 頂点レイアウト構造体
-	//	3,								// 頂点レイアウト数
-	//	pVSBlob->GetBufferPointer(),	// 頂点シェーダーバイナリ
-	//	pVSBlob->GetBufferSize(),		// バイナリサイズ
-	//	&pVertexLayout_					// 完成した頂点レイアウト
-	//);
-	//if(FAILED(hr)) {
-	//	MessageBox(nullptr, L"頂点レイアウトの作成に失敗しました。", L"エラー", MB_OK);
-	//	SAFE_RELEASE(pVSBlob);
-	//	return E_FAIL;
-	//}
+	// 頂点レイアウト作成
+	D3D11_INPUT_ELEMENT_DESC layout[]={
+		{ "POSITION",0,DXGI_FORMAT_R32G32B32_FLOAT,0,0,D3D11_INPUT_PER_VERTEX_DATA,0 },	// 頂点座標
+		{ "TEXCOORD",0,DXGI_FORMAT_R32G32_FLOAT,0,sizeof(XMVECTOR),D3D11_INPUT_PER_VERTEX_DATA,0}, // UV座標
+		{ "NORMAL",0, DXGI_FORMAT_R32G32B32A32_FLOAT,0,sizeof(XMVECTOR) * 2,D3D11_INPUT_PER_VERTEX_DATA,0}, // 法線
+	};
+	hr = pDevice_->CreateInputLayout(
+		layout,										// 頂点レイアウト構造体
+		3,											// 頂点レイアウト数
+		pVSBlob->GetBufferPointer(),				// 頂点シェーダーバイナリ
+		pVSBlob->GetBufferSize(),					// バイナリサイズ
+		&(shaderBundle[SHADER_3D].pVertexLayout_)	// 完成した頂点レイアウト
+	);
+	if(FAILED(hr)) {
+		MessageBox(nullptr, L"頂点レイアウトの作成に失敗しました。", L"エラー", MB_OK);
+		SAFE_RELEASE(pVSBlob);
+		return E_FAIL;
+	}
 
-	//SAFE_RELEASE(pVSBlob); // 頂点シェーダーバイナリはもう不要なので解放
+	SAFE_RELEASE(pVSBlob); // 頂点シェーダーバイナリはもう不要なので解放
 
-	//// ピクセルシェーダーコンパイル
-	//D3DCompileFromFile(
-	//	L"Simple3D.hlsl",		// シェーダーファイル名
-	//	nullptr,				// 定義マクロ
-	//	nullptr,				// インクルード方法
-	//	"PS",					// エントリーポイント関数名
-	//	"ps_5_0",				// シェーダーモデル指定
-	//	NULL,					// コンパイルオプション
-	//	0,						// 追加オプション
-	//	&pPSBlob,				// 成功時にバイナリが入る
-	//	nullptr					// エラー時にエラー内容が入る
-	//);
-	//assert(pPSBlob != nullptr); // コンパイル失敗してたら止める
-	//hr = pDevice_->CreatePixelShader(
-	//	pPSBlob->GetBufferPointer(),	// ピクセルシェーダーバイナリ
-	//	pPSBlob->GetBufferSize(),		// バイナリサイズ
-	//	nullptr,						// なんかよくわからん
-	//	&pPixelShader_					// 完成したピクセルシェーダー
-	//);
-	//if(FAILED(hr)) {
-	//	MessageBox(nullptr, L"ピクセルシェーダーの作成に失敗しました。", L"エラー", MB_OK);
-	//	SAFE_RELEASE(pPSBlob);
-	//	return E_FAIL;
-	//}
+	// ピクセルシェーダーコンパイル
+	D3DCompileFromFile(
+		L"Simple3D.hlsl",		// シェーダーファイル名
+		nullptr,				// 定義マクロ
+		nullptr,				// インクルード方法
+		"PS",					// エントリーポイント関数名
+		"ps_5_0",				// シェーダーモデル指定
+		NULL,					// コンパイルオプション
+		0,						// 追加オプション
+		&pPSBlob,				// 成功時にバイナリが入る
+		nullptr					// エラー時にエラー内容が入る
+	);
+	assert(pPSBlob != nullptr); // コンパイル失敗してたら止める
+	hr = pDevice_->CreatePixelShader(
+		pPSBlob->GetBufferPointer(),				// ピクセルシェーダーバイナリ
+		pPSBlob->GetBufferSize(),					// バイナリサイズ
+		nullptr,									// なんかよくわからん
+		&(shaderBundle[SHADER_3D].pPixelShader_)	// 完成したピクセルシェーダー
+	);
+	if(FAILED(hr)) {
+		MessageBox(nullptr, L"ピクセルシェーダーの作成に失敗しました。", L"エラー", MB_OK);
+		SAFE_RELEASE(pPSBlob);
+		return E_FAIL;
+	}
 
-	//SAFE_RELEASE(pPSBlob); // ピクセルシェーダーバイナリはもう不要なので解放
+	SAFE_RELEASE(pPSBlob); // ピクセルシェーダーバイナリはもう不要なので解放
 
-	//// ラスタライザーステート作成
-	//D3D11_RASTERIZER_DESC rdc = {};
-	//// 描画する面の設定
-	//rdc.CullMode = D3D11_CULL_BACK;				// 背面カリング
-	//rdc.FillMode = D3D11_FILL_SOLID;			// 塗りつぶし
-	//rdc.FrontCounterClockwise = FALSE;			// 頂点は時計回りが表
-	//hr = pDevice_->CreateRasterizerState(&rdc, &pRasterizerState_);
-	//if(FAILED(hr)) {
-	//	MessageBox(nullptr, L"ラスタライザーステートの作成に失敗しました。", L"エラー", MB_OK);
-	//	return E_FAIL;
-	//}
+	// ラスタライザーステート作成
+	D3D11_RASTERIZER_DESC rdc = {};
+	// 描画する面の設定
+	rdc.CullMode = D3D11_CULL_BACK;				// 背面カリング
+	rdc.FillMode = D3D11_FILL_SOLID;			// 塗りつぶし
+	rdc.FrontCounterClockwise = FALSE;			// 頂点は時計回りが表
+	hr = pDevice_->CreateRasterizerState(&rdc, &(shaderBundle[SHADER_3D].pRasterizerState_));
+	if(FAILED(hr)) {
+		MessageBox(nullptr, L"ラスタライザーステートの作成に失敗しました。", L"エラー", MB_OK);
+		return E_FAIL;
+	}
 
-	// ここから2D描画用シェーダー読み込み
+
+	return S_OK;
+}
+
+// 2Dシェーダー初期化
+HRESULT Direct3D::InitShader2D() {
+	HRESULT hr;
 	// 頂点シェーダー読み込み
 	ID3DBlob* pVSBlob = nullptr;
 	D3DCompileFromFile(
@@ -212,9 +236,9 @@ HRESULT Direct3D::InitShader() {
 		pVSBlob->GetBufferPointer(),
 		pVSBlob->GetBufferSize(),
 		NULL,
-		&pVertexShader_
+		&(shaderBundle[SHADER_2D].pVertexShader_)
 	);
-	if(FAILED(hr)) {
+	if (FAILED(hr)) {
 		MessageBox(nullptr, L"頂点シェーダーの作成に失敗しました。", L"エラー", MB_OK);
 		SAFE_RELEASE(pVSBlob);
 		return E_FAIL;
@@ -230,9 +254,9 @@ HRESULT Direct3D::InitShader() {
 		layout.size(),
 		pVSBlob->GetBufferPointer(),
 		pVSBlob->GetBufferSize(),
-		&pVertexLayout_
+		&(shaderBundle[SHADER_2D].pVertexLayout_)
 	);
-	if(FAILED(hr)) {
+	if (FAILED(hr)) {
 		MessageBox(nullptr, L"頂点レイアウトの作成に失敗しました。", L"エラー", MB_OK);
 		SAFE_RELEASE(pVSBlob);
 		return E_FAIL;
@@ -258,9 +282,9 @@ HRESULT Direct3D::InitShader() {
 		pPSBlob->GetBufferPointer(),
 		pPSBlob->GetBufferSize(),
 		nullptr,
-		&pPixelShader_
+		&(shaderBundle[SHADER_2D].pPixelShader_)
 	);
-	if(FAILED(hr)) {
+	if (FAILED(hr)) {
 		MessageBox(nullptr, L"ピクセルシェーダーの作成に失敗しました。", L"エラー", MB_OK);
 		SAFE_RELEASE(pPSBlob);
 		return E_FAIL;
@@ -274,19 +298,21 @@ HRESULT Direct3D::InitShader() {
 	rdc.CullMode = D3D11_CULL_BACK;				// 背面カリング
 	rdc.FillMode = D3D11_FILL_SOLID;			// 塗りつぶし
 	rdc.FrontCounterClockwise = FALSE;			// 頂点は時計回りが表
-	hr = pDevice_->CreateRasterizerState(&rdc, &pRasterizerState_);
+	hr = pDevice_->CreateRasterizerState(&rdc, &(shaderBundle[SHADER_2D].pRasterizerState_));
 	if (FAILED(hr)) {
 		MessageBox(nullptr, L"ラスタライザーステートの作成に失敗しました。", L"エラー", MB_OK);
 		return E_FAIL;
 	}
 
-	// それぞれのデバイスコンテキストにセット
-	pContext_->VSSetShader(pVertexShader_, NULL, 0);					// 頂点シェーダーセット
-	pContext_->PSSetShader(pPixelShader_, NULL, 0);					// ピクセルシェーダーセット
-	pContext_->IASetInputLayout(pVertexLayout_);						// 頂点レイアウトセット
-	pContext_->RSSetState(pRasterizerState_);							// ラスタライザーステートセット
-
 	return S_OK;
+}
+
+void Direct3D::SetShader(SHADER_TYPE type) {
+	// それぞれのデバイスコンテキストにセット
+	pContext_->VSSetShader(shaderBundle[type].pVertexShader_, NULL, 0);	// 頂点シェーダーセット
+	pContext_->PSSetShader(shaderBundle[type].pPixelShader_, NULL, 0);	// ピクセルシェーダーセット
+	pContext_->IASetInputLayout(shaderBundle[type].pVertexLayout_);		// 頂点レイアウトセット
+	pContext_->RSSetState(shaderBundle[type].pRasterizerState_);		// ラスタライザーステートセット
 }
 
 // 描画開始
@@ -306,10 +332,12 @@ void Direct3D::EndDraw() {
 
 // 解放
 void Direct3D::Release() {
-	SAFE_RELEASE(pRasterizerState_);
-	SAFE_RELEASE(pVertexLayout_);
-	SAFE_RELEASE(pPixelShader_);
-	SAFE_RELEASE(pVertexShader_);
+	for (int i = 0; i < SHADER_MAX; i++) {
+		SAFE_RELEASE(shaderBundle[i].pRasterizerState_);
+		SAFE_RELEASE(shaderBundle[i].pVertexLayout_);
+		SAFE_RELEASE(shaderBundle[i].pPixelShader_);
+		SAFE_RELEASE(shaderBundle[i].pVertexShader_);
+	}
 
 	SAFE_RELEASE(pRenderTargetView_);
 	SAFE_RELEASE(pSwapChain_);

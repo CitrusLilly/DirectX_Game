@@ -4,7 +4,7 @@
 #include "Direct3D.h"
 //#include "Quad.h"
 #include "Camera.h"
-//#include "Dice.h"
+#include "Dice.h"
 #include "Sprite.h"
 
 // リンカ
@@ -21,7 +21,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 //Quad* pQuad;
 //Dice* pDice;
-Sprite* pSprite;
+//Sprite* pSprite;
 
 // エントリーポイント
 int APIENTRY WinMain(HINSTANCE hInstance,HINSTANCE hPrevInst,LPSTR lpCmdLine,int nCmdShow) {
@@ -82,11 +82,11 @@ int APIENTRY WinMain(HINSTANCE hInstance,HINSTANCE hPrevInst,LPSTR lpCmdLine,int
 	//if (FAILED(pQuad->Initialize())) {
 	//	return 0;
 	//}
-	//pDice = new Dice();
-	//if (FAILED(pDice->Initialize())) {
-	//	return 0;
-	//}
-	pSprite = new Sprite();
+	Dice* pDice = new Dice();
+	if (FAILED(pDice->Initialize())) {
+		return 0;
+	}
+	Sprite* pSprite = new Sprite();
 	if (FAILED(pSprite->Initialize())) {
 		return 0;
 	}
@@ -107,11 +107,13 @@ int APIENTRY WinMain(HINSTANCE hInstance,HINSTANCE hPrevInst,LPSTR lpCmdLine,int
 			// ゲーム処理
 			Direct3D::BeginDraw();
 			// 描画処理
-			//static float angle = 0;
-			//angle += 0.01f;
-			//XMMATRIX matZ = XMMatrixRotationZ(XMConvertToRadians(angle));
-			//XMMATRIX matY = XMMatrixRotationY(XMConvertToRadians(angle));
-			//XMMATRIX mat = matY * matZ;
+			static float angle = 0;
+			angle += 0.01f;
+			XMMATRIX matY = XMMatrixRotationY(XMConvertToRadians(angle));
+			XMMATRIX matT = XMMatrixTranslation(0,3,0);
+			XMMATRIX mat = matT * matY;
+			pDice->Draw(mat);
+
 			//XMMATRIX matT = XMMatrixTranslation(4.0f, 1.0f, 0.0f);
 			//XMMATRIX matS = XMMatrixScaling(1.0f, 3.0f, 1.0f);
 			//XMMATRIX mat = matT * matS;
@@ -119,7 +121,7 @@ int APIENTRY WinMain(HINSTANCE hInstance,HINSTANCE hPrevInst,LPSTR lpCmdLine,int
 			//XMMATRIX matT = XMMatrixTranslation(2.0f, 0.0f, 0.0f);
 			//XMMATRIX matS = XMMatrixScaling(2.0f, 2.0f, 2.0f);
 			//XMMATRIX mat = matS * matR * matT;
-			XMMATRIX mat = XMMatrixScaling(512.0f / 800.0f, 256.0f / 600.0f, 1.0f);
+			mat = XMMatrixScaling(512.0f / 800.0f, 256.0f / 600.0f, 1.0f);
 
 			//pQuad->Draw(mat);
 			//pDice->Draw(mat);
@@ -131,7 +133,7 @@ int APIENTRY WinMain(HINSTANCE hInstance,HINSTANCE hPrevInst,LPSTR lpCmdLine,int
 
 	// 解放処理
 	//SAFE_DELETE(pQuad);
-	//SAFE_DELETE(pDice);
+	SAFE_DELETE(pDice);
 	SAFE_DELETE(pSprite);
 	Direct3D::Release();
 

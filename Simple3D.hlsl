@@ -10,8 +10,8 @@ SamplerState g_sampler : register(s0); // サンプラー
 //───────────────────────────────────
 cbuffer global
 {
-    float4x4 matWVP; // ワールドビュー射影変換行列
-    float4x4 matW;   // ワールド行列
+    float4x4 matWVP;        // ワールドビュー射影変換行列
+    float4x4 matNormal;     // ワールド行列
 };
 
 //───────────────────────────────────
@@ -39,12 +39,12 @@ VS_OUT VS(float4 pos : POSITION,float4 uv : TEXCOORD,float4 normal : NORMAL)
     outData.uv = uv;
     
     // 法線ベクトルをワールド行列で変換
-    normal = mul(normal, matW);
+    normal = mul(normal, matNormal);
     
     // 色(明るさ)をピクセルシェーダーへ
     float4 light = float4(-1, 0.5, -0.7, 0); // ライトの向き
     light = normalize(light); // 正規化
-    outData.color = dot(normal, light); // 法線ベクトルとライトの内積計算
+    outData.color = clamp(dot(normal, light),0,1); // 法線ベクトルとライトの内積計算
     
     // まとめて出力
     return outData;

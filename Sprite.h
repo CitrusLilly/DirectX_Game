@@ -4,7 +4,6 @@
 #include "Texture.h"
 #include <vector>
 
-using namespace DirectX;
 #define SAFE_DELETE_ARRAY(p) if(p != nullptr){delete[] p; p = nullptr;} // ˆÀ‘S‚Éíœ
 
 class Sprite {
