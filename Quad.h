@@ -4,8 +4,7 @@
 #include "Direct3D.h"
 #include "Texture.h"
 #include <vector>
-
-using namespace DirectX;
+#include "Transform.h"
 
 // コンスタントバッファー
 struct CONSTANT_BUFFER {
@@ -38,7 +37,7 @@ public:
 	Quad();								// コンストラクタ
 	~Quad();							// デストラクタ
 	HRESULT Initialize();				// 初期化
-	void Draw(XMMATRIX& worldMatrix);	// 描画
+	void Draw(Transform& transform);	// 描画
 	void Release();						// 解放
 private:
 	virtual void InitVertexData();		// 頂点情報の初期化
@@ -49,6 +48,6 @@ private:
 	HRESULT LoadTexture();				// テクスチャ読み込み
 
 	// ────────────Draw関数から呼ばれる関数────────────────────
-	void PassDataToCB(XMMATRIX& worldMatrix);	// コンスタントバッファにデータを送る
+	void PassDataToCB(XMMATRIX worldMatrix);	// コンスタントバッファにデータを送る
 	void SetBufferToPipeline();					// パイプラインに各種バッファをセットする
 };

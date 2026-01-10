@@ -1,23 +1,4 @@
-﻿C:\Users\kazuk\source\repos\DirectX_Game\Simple3D.hlsl(39,5-19): warning X3206: implicit truncation of vector type
-  
-  compilation object save succeeded; see C:\Users\kazuk\Source\Repos\DirectX_Game\x64\Debug\Simple3D.cso
-  Camera.cpp
-  Dice.cpp
-C:\Users\kazuk\source\repos\DirectX_Game\Dice.cpp(40,29): warning C4267: '=': 'size_t' から 'int' に変換しました。データが失われているかもしれません。
-C:\Users\kazuk\source\repos\DirectX_Game\Dice.cpp(61,25): warning C4267: '=': 'size_t' から 'int' に変換しました。データが失われているかもしれません。
-  Direct3D.cpp
-C:\Users\kazuk\source\repos\DirectX_Game\Direct3D.cpp(254,14): warning C4267: '引数': 'size_t' から 'UINT' に変換しました。データが失われているかもしれません。
-  Quad.cpp
-C:\Users\kazuk\source\repos\DirectX_Game\Quad.cpp(57,46): warning C4267: '引数': 'size_t' から 'UINT' に変換しました。データが失われているかもしれません。
-C:\Users\kazuk\source\repos\DirectX_Game\Quad.cpp(97,29): warning C4267: '=': 'size_t' から 'int' に変換しました。データが失われているかもしれません。
-C:\Users\kazuk\source\repos\DirectX_Game\Quad.cpp(125,25): warning C4267: '=': 'size_t' から 'int' に変換しました。データが失われているかもしれません。
-  Sprite.cpp
-C:\Users\kazuk\source\repos\DirectX_Game\Sprite.cpp(56,35): warning C4244: '引数': 'uint64_t' から 'UINT' への変換です。データが失われる可能性があります。
-C:\Users\kazuk\source\repos\DirectX_Game\Sprite.cpp(99,39): warning C4267: '=': 'size_t' から 'UINT' に変換しました。データが失われているかもしれません。
-C:\Users\kazuk\source\repos\DirectX_Game\Sprite.cpp(127,29): warning C4267: '=': 'size_t' から 'UINT' に変換しました。データが失われているかもしれません。
-  Texture.cpp
-  main.cpp
-  コードを生成中...
+﻿  main.cpp
   DirectX_Game.vcxproj -> C:\Users\kazuk\Source\Repos\DirectX_Game\x64\Debug\DirectX_Game.exe
   C:\Users\kazuk\source\repos\DirectX_Game\Simple2D.hlsl
   C:\Users\kazuk\source\repos\DirectX_Game\Simple3D.hlsl

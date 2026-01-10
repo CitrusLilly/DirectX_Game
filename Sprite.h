@@ -3,6 +3,7 @@
 #include "Direct3D.h"
 #include "Texture.h"
 #include <vector>
+#include "Transform.h"
 
 #define SAFE_DELETE_ARRAY(p) if(p != nullptr){delete[] p; p = nullptr;} // 安全に削除
 
@@ -35,7 +36,7 @@ public:
 	Sprite();							// コンストラクタ
 	~Sprite();							// デストラクタ
 	HRESULT Initialize();				// 初期化
-	void Draw(XMMATRIX& worldMatrix);	// 描画
+	void Draw(Transform& transform);	// 描画
 	void Release();						// 解放
 private:
 	// ────────────Initializeから呼ばれる関数──────────────────
@@ -47,6 +48,6 @@ private:
 	HRESULT LoadTexture();				// テクスチャ読み込み
 
 	// ────────────Draw関数から呼ばれる関数────────────────────
-	void PassDataToCB(XMMATRIX& worldMatrix);	// コンスタントバッファにデータを送る
+	void PassDataToCB(XMMATRIX worldMatrix);	// コンスタントバッファにデータを送る
 	void SetBufferToPipeline();					// パイプラインに各種バッファをセットする
 };

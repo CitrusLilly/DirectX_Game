@@ -44,10 +44,14 @@ HRESULT Sprite::Initialize() {
 }
 
 // 描画
-void Sprite::Draw(XMMATRIX& worldMatrix) {
+void Sprite::Draw(Transform& transform) {
 	Direct3D::SetShader(SHADER_2D);
+
+	// トランスフォームを計算
+	transform.Calclation();
+
 	// コンスタントバッファに渡す情報
-	PassDataToCB(worldMatrix);
+	PassDataToCB(transform.GetWorldMatrix());
 
 	// パイプラインに各種バッファをセットする
 	SetBufferToPipeline();
@@ -178,7 +182,7 @@ HRESULT Sprite::LoadTexture() {
 }
 
 // コンスタントバッファにデータを送る
-void Sprite::PassDataToCB(XMMATRIX& worldMatrix) {
+void Sprite::PassDataToCB(XMMATRIX worldMatrix) {
 	CONSTANT_BUFFER cb = {};
 	// 行列の転置
 	cb.matW = XMMatrixTranspose(worldMatrix);

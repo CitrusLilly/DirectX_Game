@@ -44,11 +44,14 @@ HRESULT Quad::Initialize() {
 }
 
 // 描画
-void Quad::Draw(XMMATRIX& worldMatrix) {
+void Quad::Draw(Transform& transform) {
 	Direct3D::SetShader(SHADER_3D);
 
+	// トランスフォームの計算
+	transform.Calclation();
+
 	// コンスタントバッファに情報を渡す
-	PassDataToCB(worldMatrix);
+	PassDataToCB(transform.GetWorldMatrix());
 
 	// パイプラインに各種バッファをセットする
 	SetBufferToPipeline();
@@ -183,7 +186,7 @@ HRESULT Quad::LoadTexture() {
 }
 
 // コンスタントバッファに情報を渡す
-void Quad::PassDataToCB(XMMATRIX& worldMatrix) {
+void Quad::PassDataToCB(XMMATRIX worldMatrix) {
 	// コンスタントバッファに渡す情報
 	CONSTANT_BUFFER cb = {};
 	// 行列の転置
