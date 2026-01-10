@@ -7,6 +7,7 @@
 #include "Dice.h"
 #include "Sprite.h"
 #include "Transform.h"
+#include "Fbx.h"
 
 // リンカ
 #pragma comment(lib,"d3d11.lib")
@@ -23,6 +24,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 //Quad* pQuad;
 //Dice* pDice;
 //Sprite* pSprite;
+Fbx* pFbx;
 
 // エントリーポイント
 int APIENTRY WinMain(HINSTANCE hInstance,HINSTANCE hPrevInst,LPSTR lpCmdLine,int nCmdShow) {
@@ -91,6 +93,8 @@ int APIENTRY WinMain(HINSTANCE hInstance,HINSTANCE hPrevInst,LPSTR lpCmdLine,int
 	if (FAILED(pSprite->Initialize())) {
 		return 0;
 	}
+	pFbx = new Fbx();
+	pFbx->Load("Assets/Oden.fbx");
 
 	// メッセージループ
 	MSG msg;
@@ -114,12 +118,14 @@ int APIENTRY WinMain(HINSTANCE hInstance,HINSTANCE hPrevInst,LPSTR lpCmdLine,int
 			Transform diceTransform;
 			diceTransform.position_.y = 3.0f;
 			diceTransform.rotate_.y = angle;
-			pDice->Draw(diceTransform);
+			//pDice->Draw(diceTransform);
 
 			Transform spriteTransform;
 			spriteTransform.scale_.x = 512.0f / 800.0f;
 			spriteTransform.scale_.y = 256.0f / 600.0f;
-			pDice->Draw(spriteTransform);
+			//pSprite->Draw(spriteTransform);
+
+			pFbx->Draw(diceTransform);
 
 			//XMMATRIX matY = XMMatrixRotationY(XMConvertToRadians(angle));
 			//XMMATRIX matT = XMMatrixTranslation(0,3,0);
@@ -145,6 +151,7 @@ int APIENTRY WinMain(HINSTANCE hInstance,HINSTANCE hPrevInst,LPSTR lpCmdLine,int
 
 	// 解放処理
 	//SAFE_DELETE(pQuad);
+	SAFE_DELETE(pFbx);
 	SAFE_DELETE(pDice);
 	SAFE_DELETE(pSprite);
 	Direct3D::Release();

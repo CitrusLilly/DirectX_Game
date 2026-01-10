@@ -51,7 +51,7 @@ void Quad::Draw(Transform& transform) {
 	transform.Calclation();
 
 	// コンスタントバッファに情報を渡す
-	PassDataToCB(transform.GetWorldMatrix());
+	PassDataToCB(transform);
 
 	// パイプラインに各種バッファをセットする
 	SetBufferToPipeline();
@@ -186,12 +186,12 @@ HRESULT Quad::LoadTexture() {
 }
 
 // コンスタントバッファに情報を渡す
-void Quad::PassDataToCB(XMMATRIX worldMatrix) {
+void Quad::PassDataToCB(Transform transform) {
 	// コンスタントバッファに渡す情報
 	CONSTANT_BUFFER cb = {};
 	// 行列の転置
-	cb.matWVP = XMMatrixTranspose(worldMatrix * Camera::GetViewMatrix() * Camera::GetProjectionMatrix());
-	cb.matNormal = XMMatrixTranspose(worldMatrix);
+	cb.matWVP = XMMatrixTranspose(transform.GetWorldMatrix() * Camera::GetViewMatrix() * Camera::GetProjectionMatrix());
+	cb.matNormal = XMMatrixTranspose(transform.GetNormalMatrix());
 
 	D3D11_MAPPED_SUBRESOURCE pdata;
 	Direct3D::pContext_->Map(		// GUPからのデータアクセスを止める

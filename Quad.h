@@ -48,6 +48,6 @@ private:
 	HRESULT LoadTexture();				// テクスチャ読み込み
 
 	// ────────────Draw関数から呼ばれる関数────────────────────
-	void PassDataToCB(XMMATRIX worldMatrix);	// コンスタントバッファにデータを送る
+	void PassDataToCB(Transform transform);	// コンスタントバッファにデータを送る
 	void SetBufferToPipeline();					// パイプラインに各種バッファをセットする
 };
