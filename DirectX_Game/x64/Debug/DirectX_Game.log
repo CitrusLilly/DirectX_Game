@@ -1,4 +1,9 @@
-﻿  main.cpp
+﻿C:\Users\kazuk\source\repos\DirectX_Game\Simple3D.hlsl(40,5-19): warning X3206: implicit truncation of vector type
+  
+  compilation object save succeeded; see C:\Users\kazuk\Source\Repos\DirectX_Game\x64\Debug\Simple3D.cso
+  Fbx.cpp
+C:\Users\kazuk\source\repos\DirectX_Game\Fbx.cpp(73,28): warning C4018: '<': signed と unsigned の数値を比較しようとしました。
+C:\Users\kazuk\source\repos\DirectX_Game\Fbx.cpp(125,29): warning C4018: '<': signed と unsigned の数値を比較しようとしました。
   DirectX_Game.vcxproj -> C:\Users\kazuk\Source\Repos\DirectX_Game\x64\Debug\DirectX_Game.exe
   C:\Users\kazuk\source\repos\DirectX_Game\Simple2D.hlsl
   C:\Users\kazuk\source\repos\DirectX_Game\Simple3D.hlsl

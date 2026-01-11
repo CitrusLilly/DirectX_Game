@@ -13,8 +13,8 @@
 #pragma comment(lib,"d3d11.lib")
 
 // マクロ
-#define WINDOW_CLASS	L"SampleGame"
-#define WINDOW_TITLE	L"サンプルゲーム"
+#define WINDOW_CLASS	"SampleGame"
+#define WINDOW_TITLE	"サンプルゲーム"
 #define WINDOW_WIDTH	800
 #define WINDOW_HEIGHT	600
 
@@ -85,14 +85,14 @@ int APIENTRY WinMain(HINSTANCE hInstance,HINSTANCE hPrevInst,LPSTR lpCmdLine,int
 	//if (FAILED(pQuad->Initialize())) {
 	//	return 0;
 	//}
-	Dice* pDice = new Dice();
-	if (FAILED(pDice->Initialize())) {
-		return 0;
-	}
-	Sprite* pSprite = new Sprite();
-	if (FAILED(pSprite->Initialize())) {
-		return 0;
-	}
+	//Dice* pDice = new Dice();
+	//if (FAILED(pDice->Initialize())) {
+	//	return 0;
+	//}
+	//Sprite* pSprite = new Sprite();
+	//if (FAILED(pSprite->Initialize())) {
+	//	return 0;
+	//}
 	pFbx = new Fbx();
 	pFbx->Load("Assets/Oden.fbx");
 
@@ -116,7 +116,9 @@ int APIENTRY WinMain(HINSTANCE hInstance,HINSTANCE hPrevInst,LPSTR lpCmdLine,int
 			angle += 0.01f;
 
 			Transform diceTransform;
-			diceTransform.position_.y = 3.0f;
+			//diceTransform.position_.y = 3.0f;
+			diceTransform.position_.y = -2.0f;
+			diceTransform.position_.z = 3.0f;
 			diceTransform.rotate_.y = angle;
 			//pDice->Draw(diceTransform);
 
@@ -152,8 +154,8 @@ int APIENTRY WinMain(HINSTANCE hInstance,HINSTANCE hPrevInst,LPSTR lpCmdLine,int
 	// 解放処理
 	//SAFE_DELETE(pQuad);
 	SAFE_DELETE(pFbx);
-	SAFE_DELETE(pDice);
-	SAFE_DELETE(pSprite);
+	//SAFE_DELETE(pDice);
+	//SAFE_DELETE(pSprite);
 	Direct3D::Release();
 
 	return 0;

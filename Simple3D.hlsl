@@ -12,6 +12,8 @@ cbuffer global
 {
     float4x4 matWVP;        // ワールドビュー射影変換行列
     float4x4 matNormal;     // ワールド行列
+    float4 diffuseColor;    // マテリアルの色
+    bool isTexture;         // テクスチャを張っているかどうか
 };
 
 //───────────────────────────────────
@@ -32,8 +34,7 @@ VS_OUT VS(float4 pos : POSITION,float4 uv : TEXCOORD,float4 normal : NORMAL)
     // ピクセルシェーダーへ渡す情報
     VS_OUT outData;
     
-    // ローカル座標に、ワールド・ビュー・射影変換行列を乗算して
-    // スクリーン座標に変換し、ピクセルシェーダーへ
+    // ローカル座標に、ワールド・ビュー・射影行列で変換
     outData.pos = mul(pos, matWVP);
     // UV座標をピクセルシェーダーへ
     outData.uv = uv;
@@ -42,7 +43,7 @@ VS_OUT VS(float4 pos : POSITION,float4 uv : TEXCOORD,float4 normal : NORMAL)
     normal = mul(normal, matNormal);
     
     // 色(明るさ)をピクセルシェーダーへ
-    float4 light = float4(-1, 0.5, -0.7, 0); // ライトの向き
+    float4 light = float4(0, 1, -1, 0); // ライトの向き
     light = normalize(light); // 正規化
     outData.color = clamp(dot(normal, light),0,1); // 法線ベクトルとライトの内積計算
     
@@ -57,8 +58,17 @@ float4 PS(VS_OUT inData) : SV_Target
 {
     float4 lightSource = float4(1.0, 1.0, 1.0, 1.0); // 光源の色
     float4 ambentSource = float4(0.2, 0.2, 0.2, 1.0); // 環境光の色
-    float4 diffuse = lightSource * g_texture.Sample(g_sampler, inData.uv) * inData.color; // 拡散光
-    float4 ambient = lightSource * g_texture.Sample(g_sampler, inData.uv) * ambentSource; // 環境光
-    return (diffuse + ambient); // 合成して出力
+    float4 diffuse;
+    float4 ambient;
+    
+    if (isTexture)
+    {
+        diffuse = lightSource * g_texture.Sample(g_sampler, inData.uv) * inData.color; // 拡散光
+        ambient = lightSource * g_texture.Sample(g_sampler, inData.uv) * ambentSource; // 環境光
+    }else{
+        diffuse = lightSource * diffuseColor * inData.color;
+        ambient = lightSource * diffuseColor * ambentSource;
+    }
 
+    return diffuse + ambient;
 }

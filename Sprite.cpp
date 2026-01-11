@@ -111,7 +111,7 @@ HRESULT Sprite::CreateVertexBuffer() {
 	data_vertex.pSysMem = vertices_.data(); // 頂点データアドレス
 	hr = Direct3D::pDevice_->CreateBuffer(&bd_vertex, &data_vertex, &pVertexBuffer_);
 	if (FAILED(hr)) {
-		MessageBox(nullptr, L"頂点バッファの作成に失敗しました。", L"エラー", MB_OK);
+		MessageBox(nullptr, "頂点バッファの作成に失敗しました。", "エラー", MB_OK);
 		return E_FAIL;
 	}
 
@@ -141,7 +141,7 @@ HRESULT Sprite::CreateIndexBuffer() {
 	HRESULT hr;
 	hr = Direct3D::pDevice_->CreateBuffer(&bd, &initData, &pIndexBuffer_);
 	if (FAILED(hr)) {
-		MessageBox(nullptr, L"インデックスバッファの作成に失敗しました。", L"エラー", MB_OK);
+		MessageBox(nullptr, "インデックスバッファの作成に失敗しました。", "エラー", MB_OK);
 		return E_FAIL;
 	}
 
@@ -161,7 +161,7 @@ HRESULT Sprite::CreateConstantBuffer() {
 	HRESULT hr;
 	hr = Direct3D::pDevice_->CreateBuffer(&cd, nullptr, &pConstantBuffer_);
 	if (FAILED(hr)) {
-		MessageBox(nullptr, L"コンスタントバッファの作成に失敗しました。", L"エラー", MB_OK);
+		MessageBox(nullptr, "コンスタントバッファの作成に失敗しました。", "エラー", MB_OK);
 		return E_FAIL;
 	}
 
@@ -174,7 +174,7 @@ HRESULT Sprite::LoadTexture() {
 	HRESULT hr;
 	hr = pTexture_->Load("Assets\\dice.png");
 	if (FAILED(hr)) {
-		MessageBox(NULL, L"テクスチャの読み込みに失敗しました。", L"エラー", MB_OK);
+		MessageBox(NULL, "テクスチャの読み込みに失敗しました。", "エラー", MB_OK);
 		return E_FAIL;
 	}
 

@@ -30,8 +30,7 @@ VS_OUT VS(float4 pos : POSITION, float4 uv : TEXCOORD)
     // ピクセルシェーダーへ渡す情報
     VS_OUT outData;
     
-    // ローカル座標に、ワールド・ビュー・射影変換行列を乗算して
-    // スクリーン座標に変換し、ピクセルシェーダーへ
+    // ローカル座標に、ワールド行列で変換
     outData.pos = mul(pos, matW);
     // UV座標をピクセルシェーダーへ
     outData.uv = uv;
@@ -46,5 +45,4 @@ VS_OUT VS(float4 pos : POSITION, float4 uv : TEXCOORD)
 float4 PS(VS_OUT inData) : SV_Target
 {
     return g_texture.Sample(g_sampler, inData.uv);
-
 }

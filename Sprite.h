@@ -5,8 +5,6 @@
 #include <vector>
 #include "Transform.h"
 
-#define SAFE_DELETE_ARRAY(p) if(p != nullptr){delete[] p; p = nullptr;} // 安全に削除
-
 class Sprite {
 	// コンスタントバッファー
 	struct CONSTANT_BUFFER {

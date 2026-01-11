@@ -12,6 +12,7 @@
 // マクロ
 #define SAFE_RELEASE(p) if(p) { p->Release(); p = nullptr; }	// 安全に解放
 #define SAFE_DELETE(p) if(p) { delete p; p = nullptr;}			// 安全に削除
+#define SAFE_DELETE_ARRAY(p) if(p != nullptr){delete[] p; p = nullptr;} // 配列を安全に削除
 
 using namespace DirectX;
 
