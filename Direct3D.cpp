@@ -49,7 +49,7 @@ HRESULT Direct3D::Initialize(int winW, int winH, HWND hWnd) {
 		nullptr,					// ビデオアダプタの指定。nullでよし
 		D3D_DRIVER_TYPE_HARDWARE,	// ドライバタイプ
 		nullptr,					// 上記がSOFTWAREじゃなければnullptr
-		0,							// 何らかのフラグ
+		0,							// デバッグモード
 		nullptr,					// デバイス、コンテキストのレベル設定。nullでよし
 		0,							// 上記でレベルを何個指定したか
 		D3D11_SDK_VERSION,			// SDKバージョン。必ずこれ
@@ -94,7 +94,7 @@ HRESULT Direct3D::Initialize(int winW, int winH, HWND hWnd) {
 	D3D11_TEXTURE2D_DESC descDepth = {};
 	descDepth.Width = winW;							// 幅
 	descDepth.Height = winH;						// 高さ
-	descDepth.MipLevels = 1;						// 
+	descDepth.MipLevels = 1;						// テクスチャの縮小段階
 	descDepth.ArraySize = 1;						// １枚だけのテクスチャ
 	descDepth.Format = DXGI_FORMAT_D32_FLOAT;		// 深度値0～1
 	descDepth.SampleDesc.Count = 1;					// MSAA(アンチエイリアス)なし
@@ -345,7 +345,7 @@ void Direct3D::SetShader(SHADER_TYPE type) {
 // 描画開始
 void Direct3D::BeginDraw() {
 	// 背景色
-	float clearColor[4] = { 0.0f,0.0f,1.0f,1.0f };	// R,G,B,A
+	float clearColor[4] = { 0.15f, 0.15f, 0.15f, 1.0f };	// R,G,B,A
 
 	// 画面をクリア
 	pContext_->ClearRenderTargetView(pRenderTargetView_, clearColor);

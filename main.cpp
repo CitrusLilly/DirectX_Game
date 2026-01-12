@@ -14,17 +14,14 @@
 #pragma comment(lib,"d3d11.lib")
 
 // マクロ
-#define WINDOW_CLASS	"SampleGame"
-#define WINDOW_TITLE	"サンプルゲーム"
+#define WINDOW_CLASS	"GameEngine"
+#define WINDOW_TITLE	"3Dモデル表示"
 #define WINDOW_WIDTH	800
 #define WINDOW_HEIGHT	600
 
 // プロトタイプ宣言
 LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
-//Quad* pQuad;
-//Dice* pDice;
-//Sprite* pSprite;
 Fbx* pFbx;
 
 // エントリーポイント
@@ -67,7 +64,7 @@ int APIENTRY WinMain(HINSTANCE hInstance,HINSTANCE hPrevInst,LPSTR lpCmdLine,int
 		NULL,					// メニューなし
 		hInstance,				// インスタンス
 		NULL					// パラメータ
-		);
+	);
 	
 	// ウィンドウ表示
 	ShowWindow(hWnd, nCmdShow);
@@ -105,25 +102,24 @@ int APIENTRY WinMain(HINSTANCE hInstance,HINSTANCE hPrevInst,LPSTR lpCmdLine,int
 			Direct3D::BeginDraw();
 			// 入力情報の更新
 			Input::Update();
+			// 入力時処理
+			static float angleX = 0; // 上下
+			static float angleY = 0; // 左右
+
+			if (Input::IsKey(DIK_UP))		angleX += 0.01f;
+			if (Input::IsKey(DIK_DOWN))		angleX -= 0.01f;
+			if (Input::IsKey(DIK_LEFT))		angleY += 0.01f;
+			if (Input::IsKey(DIK_RIGHT))	angleY -= 0.01f;
+
 			// 描画処理
-			static float angle = 0;
-			angle += 0.01f;
+			Transform transform;
+			transform.position_.y = -1.0f;
+			transform.rotate_.y = angleY;
+			transform.rotate_.x = angleX;
 
-			Transform fbxTransform;
-			fbxTransform.position_.z = 3.0f;
-			fbxTransform.rotate_.y = angle;
-
-			pFbx->Draw(fbxTransform);
+			pFbx->Draw(transform);
 
 			Direct3D::EndDraw();
-
-			if (Input::IsKeyUp(DIK_ESCAPE)) {
-				static int cnt = 0;
-				cnt++;
-				if(cnt >= 3) {
-					PostQuitMessage(0);
-				}
-			}
 		}
 	}
 

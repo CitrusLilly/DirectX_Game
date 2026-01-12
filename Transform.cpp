@@ -23,8 +23,8 @@ void Transform::Calclation() {
 	// ‰ñ“]ŒvŽZ
 	XMMATRIX rotateX,rotateY, rotateZ;
 	rotateX = XMMatrixRotationX(XMConvertToRadians(rotate_.x));
-	rotateY = XMMatrixRotationX(XMConvertToRadians(rotate_.y));
-	rotateZ = XMMatrixRotationX(XMConvertToRadians(rotate_.z));
+	rotateY = XMMatrixRotationY(XMConvertToRadians(rotate_.y));
+	rotateZ = XMMatrixRotationZ(XMConvertToRadians(rotate_.z));
 	matRotate_ = rotateX * rotateY * rotateZ;
 
 	// Šg‘å—¦ŒvŽZ

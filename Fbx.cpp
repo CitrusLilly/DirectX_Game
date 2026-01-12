@@ -213,7 +213,7 @@ void Fbx::InitMaterial(fbxsdk::FbxNode* pNode) {
 			sprintf_s(fileName, "%s%s", name, ext);
 
 			pMaterialList_[i].pTexture = new Texture;
-			HRESULT hr = pMaterialList_[i].pTexture->Load(textureFilePath);
+			HRESULT hr = pMaterialList_[i].pTexture->Load(fileName);
 			assert(hr == S_OK);
 		// テクスチャなし
 		} else {

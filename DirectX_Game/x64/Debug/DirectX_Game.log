@@ -1,5 +1,6 @@
-﻿  main.cpp
-  C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\dinput.h: DIRECTINPUT_VERSION undefined. Defaulting to version 0x0800
+﻿  Fbx.cpp
+C:\Users\kazuk\source\repos\DirectX_Game\Fbx.cpp(73,28): warning C4018: '<': signed と unsigned の数値を比較しようとしました。
+C:\Users\kazuk\source\repos\DirectX_Game\Fbx.cpp(125,29): warning C4018: '<': signed と unsigned の数値を比較しようとしました。
   DirectX_Game.vcxproj -> C:\Users\kazuk\Source\Repos\DirectX_Game\x64\Debug\DirectX_Game.exe
   C:\Users\kazuk\source\repos\DirectX_Game\Simple2D.hlsl
   C:\Users\kazuk\source\repos\DirectX_Game\Simple3D.hlsl
