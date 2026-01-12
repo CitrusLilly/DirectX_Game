@@ -33,7 +33,7 @@ void Transform::Calclation() {
 
 // ワールド行列を取得
 XMMATRIX Transform::GetWorldMatrix() {
-	return matTranslate_ * matRotate_ * matScale_;
+	return matScale_ * matRotate_ * matTranslate_;
 }
 
 // 法線変形用行列を取得

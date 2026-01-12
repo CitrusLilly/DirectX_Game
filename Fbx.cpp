@@ -82,11 +82,17 @@ void Fbx::InitVertex(fbxsdk::FbxMesh* mesh) {
 			vertices[index].position = XMVectorSet((float)pos[0], (float)pos[1], (float)pos[2],0.0f);
 
 			// 頂点のUV
-			FbxLayerElementUV* pUV = mesh->GetLayer(0)->GetUVs();
-			int uvIndex = mesh->GetTextureUVIndex(poly, vertex, FbxLayerElement::eTextureDiffuse);
-			FbxVector2 uv = pUV->GetDirectArray().GetAt(uvIndex);
-			vertices[index].uv = XMVectorSet((float)(uv.mData[0]), (float)(1.0f - uv.mData[1]),0,0);
-			
+			// UVセット名を取得
+			FbxStringList uvSetNames;
+			mesh->GetUVSetNames(uvSetNames);
+			const char* uvSetName = uvSetNames[0];
+
+			// UV取得
+			FbxVector2 uv;
+			bool unmapped;
+			mesh->GetPolygonVertexUV(poly, vertex, uvSetName, uv, unmapped);
+			vertices[index].uv = XMVectorSet((float)uv[0],(float)(1.0f - uv[1]),0, 0);
+
 			// 頂点の法線
 			FbxVector4 normal;
 			mesh->GetPolygonVertexNormal(poly, vertex, normal);

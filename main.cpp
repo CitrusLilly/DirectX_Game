@@ -22,7 +22,7 @@
 // プロトタイプ宣言
 LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
-//Sprite* pSprite;
+Sprite* pSprite;
 Fbx* pFbx;
 
 // エントリーポイント
@@ -83,8 +83,8 @@ int APIENTRY WinMain(HINSTANCE hInstance,HINSTANCE hPrevInst,LPSTR lpCmdLine,int
 	// カメラ初期化
 	Camera::Initialize();
 
-	//pSprite = new Sprite();
-	//pSprite->Initialize();
+	pSprite = new Sprite();
+	pSprite->Initialize();
 	pFbx = new Fbx();
 	pFbx->Load("Assets/Oden.fbx");
 
@@ -115,6 +115,7 @@ int APIENTRY WinMain(HINSTANCE hInstance,HINSTANCE hPrevInst,LPSTR lpCmdLine,int
 			if (Input::IsKey(DIK_RIGHT))	angleY -= 0.01f;
 
 			// 描画処理
+			// 3Dオブジェクト
 			Transform transform;
 			transform.position_.y = -1.0f;
 			transform.rotate_.y = angleY;
@@ -122,10 +123,14 @@ int APIENTRY WinMain(HINSTANCE hInstance,HINSTANCE hPrevInst,LPSTR lpCmdLine,int
 
 			pFbx->Draw(transform);
 
-			//Transform spriteTransform;
-			//spriteTransform.scale_.x = 512.0f / 800.0f;
-			//spriteTransform.scale_.y = 256.0f / 600.0f;
-			//pSprite->Draw(spriteTransform);
+			// スプライト
+			Transform spriteTransform;
+			spriteTransform.scale_.x = (256.0f / 800.0f) * 2.0f;
+			spriteTransform.scale_.y = (48.0f / 600.0f) * 2.0f;
+			spriteTransform.position_.x = -1.0f;
+			spriteTransform.position_.y = 1.0f;
+
+			pSprite->Draw(spriteTransform);
 
 			Direct3D::EndDraw();
 		}

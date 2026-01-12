@@ -73,24 +73,43 @@ void Sprite::Release() {
 
 // 頂点情報の初期化
 void Sprite::InitVertexData() {
-	// 頂点データ作成
+	//// 頂点データ作成
+	//vertices_ = {
+	//	{
+	//		XMVectorSet(-1.0f,1.0f,0.0f,0.0f),
+	//		XMVectorSet(0.0f,0.0f,0.0f,0.0f),
+	//	},	// 四角形の頂点(左上)
+	//	{
+	//		XMVectorSet(1.0f,1.0f,0.0f,0.0f),
+	//		XMVectorSet(1.0f,0.0f,0.0f,0.0f),
+	//	},	// 四角形の頂点(右上)
+	//	{
+	//		XMVectorSet(1.0f,-1.0f,0.0f,0.0f),
+	//		XMVectorSet(1.0f,1.0f,0.0f,0.0f),
+	//	},	// 四角形の頂点(右下)
+	//	{
+	//		XMVectorSet(-1.0f,-1.0f,0.0f,0.0f),
+	//		XMVectorSet(0.0f,1.0f,0.0f,0.0f),
+	//	}	// 四角形の頂点(左下)
+	//};
+	// 左上原点の頂点データ
 	vertices_ = {
 		{
-			XMVectorSet(-1.0f,1.0f,0.0f,0.0f),
-			XMVectorSet(0.0f,0.0f,0.0f,0.0f),
-		},	// 四角形の頂点(左上)
+			XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),   // 左上
+			XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
+		},
 		{
-			XMVectorSet(1.0f,1.0f,0.0f,0.0f),
-			XMVectorSet(1.0f,0.0f,0.0f,0.0f),
-		},	// 四角形の頂点(右上)
+			XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f),   // 右上
+			XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f),
+		},
 		{
-			XMVectorSet(1.0f,-1.0f,0.0f,0.0f),
-			XMVectorSet(1.0f,1.0f,0.0f,0.0f),
-		},	// 四角形の頂点(右下)
+			XMVectorSet(1.0f, -1.0f, 0.0f, 0.0f),  // 右下
+			XMVectorSet(1.0f, 1.0f, 0.0f, 0.0f),
+		},
 		{
-			XMVectorSet(-1.0f,-1.0f,0.0f,0.0f),
-			XMVectorSet(0.0f,1.0f,0.0f,0.0f),
-		}	// 四角形の頂点(左下)
+			XMVectorSet(0.0f, -1.0f, 0.0f, 0.0f),  // 左下
+			XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f),
+		}
 	};
 
 	vertexNum_ = vertices_.size();
@@ -172,7 +191,7 @@ HRESULT Sprite::CreateConstantBuffer() {
 HRESULT Sprite::LoadTexture() {
 	pTexture_ = new Texture();
 	HRESULT hr;
-	hr = pTexture_->Load("Assets\\dice.png");
+	hr = pTexture_->Load("Assets\\help.png");
 	if (FAILED(hr)) {
 		MessageBox(NULL, "テクスチャの読み込みに失敗しました。", "エラー", MB_OK);
 		return E_FAIL;
