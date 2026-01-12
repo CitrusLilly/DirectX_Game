@@ -22,6 +22,7 @@
 // プロトタイプ宣言
 LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
+//Sprite* pSprite;
 Fbx* pFbx;
 
 // エントリーポイント
@@ -82,6 +83,8 @@ int APIENTRY WinMain(HINSTANCE hInstance,HINSTANCE hPrevInst,LPSTR lpCmdLine,int
 	// カメラ初期化
 	Camera::Initialize();
 
+	//pSprite = new Sprite();
+	//pSprite->Initialize();
 	pFbx = new Fbx();
 	pFbx->Load("Assets/Oden.fbx");
 
@@ -118,6 +121,11 @@ int APIENTRY WinMain(HINSTANCE hInstance,HINSTANCE hPrevInst,LPSTR lpCmdLine,int
 			transform.rotate_.x = angleX;
 
 			pFbx->Draw(transform);
+
+			//Transform spriteTransform;
+			//spriteTransform.scale_.x = 512.0f / 800.0f;
+			//spriteTransform.scale_.y = 256.0f / 600.0f;
+			//pSprite->Draw(spriteTransform);
 
 			Direct3D::EndDraw();
 		}

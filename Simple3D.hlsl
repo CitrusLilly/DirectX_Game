@@ -13,7 +13,7 @@ cbuffer global
     float4x4 matWVP;        // ワールドビュー射影変換行列
     float4x4 matNormal;     // ワールド行列
     float4 diffuseColor;    // マテリアルの色
-    bool isTexture;         // テクスチャを張っているかどうか
+    int isTexture;          // テクスチャを張っているかどうか
 };
 
 //───────────────────────────────────
@@ -61,7 +61,7 @@ float4 PS(VS_OUT inData) : SV_Target
     float4 diffuse;
     float4 ambient;
     
-    if (isTexture)
+    if (isTexture == 1)
     {
         diffuse = lightSource * g_texture.Sample(g_sampler, inData.uv) * inData.color; // 拡散光
         ambient = lightSource * g_texture.Sample(g_sampler, inData.uv) * ambentSource; // 環境光

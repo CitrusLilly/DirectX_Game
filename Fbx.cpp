@@ -2,6 +2,7 @@
 #include "Direct3D.h"
 #include "Camera.h"
 #include <assert.h>
+#include "Debug.h"
 
 // 初期化
 Fbx::Fbx()
@@ -42,14 +43,14 @@ HRESULT Fbx::Load(string fileName) {
 
 	// 現在のcurrentディレクトリを覚えておく
 	char defaultCurrentDir[MAX_PATH];
-	GetCurrentDirectory(MAX_PATH, defaultCurrentDir);
+	GetCurrentDirectoryA(MAX_PATH, defaultCurrentDir);
 
 	// 引数のfileNameからディレクトリ部分を取得
 	char dir[MAX_PATH];
 	_splitpath_s(fileName.c_str(), nullptr, 0, dir, MAX_PATH, nullptr, 0, nullptr, 0);
 
 	// カレントディレクトリを変更
-	SetCurrentDirectory(dir);
+	SetCurrentDirectoryA(dir);
 
 	InitVertex(mesh);		// 頂点バッファの初期化
 	InitIndex(mesh);		// インデックスバッファの初期化
@@ -57,7 +58,7 @@ HRESULT Fbx::Load(string fileName) {
 	InitMaterial(pNode);	// マテリアルの初期化
 
 	// カレントディレクトリを戻す
-	SetCurrentDirectory(defaultCurrentDir);
+	SetCurrentDirectoryA(defaultCurrentDir);
 
 	// マネージャを解放
 	pFbxManager->Destroy();
@@ -84,7 +85,7 @@ void Fbx::InitVertex(fbxsdk::FbxMesh* mesh) {
 			FbxLayerElementUV* pUV = mesh->GetLayer(0)->GetUVs();
 			int uvIndex = mesh->GetTextureUVIndex(poly, vertex, FbxLayerElement::eTextureDiffuse);
 			FbxVector2 uv = pUV->GetDirectArray().GetAt(uvIndex);
-			vertices[index].uv = XMVectorSet((float)(1.0f - uv.mData[0]), (float)(1.0f - uv.mData[1]),0,0);
+			vertices[index].uv = XMVectorSet((float)(uv.mData[0]), (float)(1.0f - uv.mData[1]),0,0);
 			
 			// 頂点の法線
 			FbxVector4 normal;

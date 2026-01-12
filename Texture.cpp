@@ -43,7 +43,10 @@ HRESULT Texture::Load(string fileName) {
 	samDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;		// テクスチャ座標U方向のはみ出しをクランプ
 	samDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;		// テクスチャ座標V方向のはみ出しをクランプ
 	samDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;		// テクスチャ座標W方向のはみ出しをクランプ
-	Direct3D::pDevice_->CreateSamplerState(&samDesc, &pSampler_);
+	hr = Direct3D::pDevice_->CreateSamplerState(&samDesc, &pSampler_);
+	if (FAILED(hr)) {
+		return E_FAIL;
+	}
 
 	// シェーダーリソースビューの生成
 	D3D11_SHADER_RESOURCE_VIEW_DESC srv = {};
