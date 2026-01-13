@@ -85,6 +85,7 @@ int APIENTRY WinMain(HINSTANCE hInstance,HINSTANCE hPrevInst,LPSTR lpCmdLine,int
 
 	pSprite = new Sprite();
 	pSprite->Initialize();
+	pSprite->SetPivot(Sprite::UpLeft);
 	pFbx = new Fbx();
 	pFbx->Load("Assets/Oden.fbx");
 
@@ -125,8 +126,8 @@ int APIENTRY WinMain(HINSTANCE hInstance,HINSTANCE hPrevInst,LPSTR lpCmdLine,int
 
 			// スプライト
 			Transform spriteTransform;
-			spriteTransform.scale_.x = (256.0f / 800.0f) * 2.0f;
-			spriteTransform.scale_.y = (48.0f / 600.0f) * 2.0f;
+			spriteTransform.scale_.x = 256.0f / 800.0f;
+			spriteTransform.scale_.y = 48.0f / 600.0f;
 			spriteTransform.position_.x = -1.0f;
 			spriteTransform.position_.y = 1.0f;
 

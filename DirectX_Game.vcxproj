@@ -71,10 +71,18 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>C:\Program Files\Autodesk\FBX\FBX SDK\2019.5\lib\vs2017\x64\debug;C:\Program Files\Autodesk\FBX\FBX SDK\2019.5\include;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Users\it03\Downloads\fbx_sdk\include;C:\Program Files\Autodesk\FBX\FBX SDK\2019.5\lib\vs2017\x64\debug;C:\Program Files\Autodesk\FBX\FBX SDK\2019.5\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>C:\Program Files\Autodesk\FBX\FBX SDK\2019.5\lib\vs2017\x64\release;C:\Program Files\Autodesk\FBX\FBX SDK\2019.5\lib\vs2017\x64\debug;C:\Program Files\Autodesk\FBX\FBX SDK\2019.5\include;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Users\it03\Downloads\fbx_sdk\include;C:\Program Files\Autodesk\FBX\FBX SDK\2019.5\lib\vs2017\x64\release;C:\Program Files\Autodesk\FBX\FBX SDK\2019.5\lib\vs2017\x64\debug;C:\Program Files\Autodesk\FBX\FBX SDK\2019.5\include;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Users\it03\Downloads\fbx_sdk\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <IncludePath>C:\Users\it03\Downloads\fbx_sdk\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -86,6 +94,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>C:\Users\it03\Downloads\fbx_sdk\lib\vs2017\x64\debug;</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -114,7 +123,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\Program Files\Autodesk\FBX\FBX SDK\2019.5\lib\vs2017\x64\debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Users\it03\Downloads\fbx_sdk\lib\vs2017\x64\debug;C:\Program Files\Autodesk\FBX\FBX SDK\2019.5\lib\vs2017\x64\debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
       <Command>copy /Y $(ProjectDir)*hlsl $(TargetDir)</Command>

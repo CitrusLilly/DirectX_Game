@@ -1,5 +1,6 @@
 #include "Sprite.h"
 #include "Camera.h"
+#include "Debug.h"
 
 // コンストラクタ
 Sprite::Sprite()
@@ -8,7 +9,8 @@ Sprite::Sprite()
 	, pConstantBuffer_(nullptr)
 	, pTexture_(nullptr)
 	, vertexNum_(0)
-	, indexNum_(0) {
+	, indexNum_(0)
+{
 }
 
 // デストラクタ
@@ -43,6 +45,43 @@ HRESULT Sprite::Initialize() {
 	return S_OK;
 }
 
+// ピボットの設定
+void Sprite::SetPivot(Pivot pivot) {
+	float px = 0.5f;
+	float py = 0.5f;
+
+	switch (pivot) {
+		case Center:     px = 0.5f; py = 0.5f; break;
+		case UpLeft:     px = 0.0f; py = 0.0f; break;
+		case UpRight:    px = 1.0f; py = 0.0f; break;
+		case DownLeft:   px = 0.0f; py = 1.0f; break;
+		case DownRight:  px = 1.0f; py = 1.0f; break;
+	}
+
+	// pivotからのオフセット(NDC)
+	float offsetX = (0.5f - px) * 2.0f;
+	float offsetY = (py - 0.5f) * 2.0f;
+
+	// 常に-1～1のサイズ
+	float left = -1.0f + offsetX;
+	float right = 1.0f + offsetX;
+	float top = 1.0f + offsetY;
+	float bottom = -1.0f + offsetY;
+
+	// 頂点情報
+	vertices_ = {
+		{ XMVectorSet(left,  top,    0, 0), XMVectorSet(0, 0, 0, 0) },
+		{ XMVectorSet(right, top,    0, 0), XMVectorSet(1, 0, 0, 0) },
+		{ XMVectorSet(right, bottom, 0, 0), XMVectorSet(1, 1, 0, 0) },
+		{ XMVectorSet(left,  bottom, 0, 0), XMVectorSet(0, 1, 0, 0) },
+	};
+
+	if (pVertexBuffer_) {
+		Direct3D::pContext_->UpdateSubresource(
+			pVertexBuffer_, 0, nullptr, vertices_.data(), 0, 0);
+	}
+}
+
 // 描画
 void Sprite::Draw(Transform& transform) {
 	Direct3D::SetShader(SHADER_2D);
@@ -73,44 +112,7 @@ void Sprite::Release() {
 
 // 頂点情報の初期化
 void Sprite::InitVertexData() {
-	//// 頂点データ作成
-	//vertices_ = {
-	//	{
-	//		XMVectorSet(-1.0f,1.0f,0.0f,0.0f),
-	//		XMVectorSet(0.0f,0.0f,0.0f,0.0f),
-	//	},	// 四角形の頂点(左上)
-	//	{
-	//		XMVectorSet(1.0f,1.0f,0.0f,0.0f),
-	//		XMVectorSet(1.0f,0.0f,0.0f,0.0f),
-	//	},	// 四角形の頂点(右上)
-	//	{
-	//		XMVectorSet(1.0f,-1.0f,0.0f,0.0f),
-	//		XMVectorSet(1.0f,1.0f,0.0f,0.0f),
-	//	},	// 四角形の頂点(右下)
-	//	{
-	//		XMVectorSet(-1.0f,-1.0f,0.0f,0.0f),
-	//		XMVectorSet(0.0f,1.0f,0.0f,0.0f),
-	//	}	// 四角形の頂点(左下)
-	//};
-	// 左上原点の頂点データ
-	vertices_ = {
-		{
-			XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),   // 左上
-			XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
-		},
-		{
-			XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f),   // 右上
-			XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f),
-		},
-		{
-			XMVectorSet(1.0f, -1.0f, 0.0f, 0.0f),  // 右下
-			XMVectorSet(1.0f, 1.0f, 0.0f, 0.0f),
-		},
-		{
-			XMVectorSet(0.0f, -1.0f, 0.0f, 0.0f),  // 左下
-			XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f),
-		}
-	};
+	SetPivot(Center);
 
 	vertexNum_ = vertices_.size();
 }

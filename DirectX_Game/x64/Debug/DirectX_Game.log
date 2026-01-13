@@ -1,6 +1,11 @@
-﻿  main.cpp
+﻿  Sprite.cpp
+Z:\Cpura\DirectX_Game\Sprite.cpp(99,35): warning C4244: '引数': 'uint64_t' から 'UINT' への変換です。データが失われる可能性があります。
+Z:\Cpura\DirectX_Game\Sprite.cpp(124,39): warning C4267: '=': 'size_t' から 'UINT' に変換しました。データが失われているかもしれません。
+Z:\Cpura\DirectX_Game\Sprite.cpp(152,29): warning C4267: '=': 'size_t' から 'UINT' に変換しました。データが失われているかもしれません。
+  main.cpp
   C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\dinput.h: DIRECTINPUT_VERSION undefined. Defaulting to version 0x0800
-  DirectX_Game.vcxproj -> C:\Users\kazuk\Source\Repos\DirectX_Game\x64\Debug\DirectX_Game.exe
-  C:\Users\kazuk\source\repos\DirectX_Game\Simple2D.hlsl
-  C:\Users\kazuk\source\repos\DirectX_Game\Simple3D.hlsl
+  コードを生成中...
+  DirectX_Game.vcxproj -> Z:\Cpura\DirectX_Game\x64\Debug\DirectX_Game.exe
+  Z:\Cpura\DirectX_Game\Simple2D.hlsl
+  Z:\Cpura\DirectX_Game\Simple3D.hlsl
           2 個のファイルをコピーしました。
