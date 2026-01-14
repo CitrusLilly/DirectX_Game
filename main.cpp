@@ -149,6 +149,9 @@ int APIENTRY WinMain(HINSTANCE hInstance,HINSTANCE hPrevInst,LPSTR lpCmdLine,int
 LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 	// msgはメッセージが入っている
 	switch (msg) {
+	case WM_MOUSEMOVE:		// マウスが移動したら
+		Input::SetMousePosition(LOWORD(lParam),HIWORD(lParam));
+		return 0;
 	case WM_DESTROY:		// ウィンドウの×ボタンが押された場合
 		PostQuitMessage(0);	// 終了
 		return 0;

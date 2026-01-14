@@ -1,10 +1,16 @@
 #include "Input.h"
+#include "Debug.h"
+
+using namespace DirectX;
 
 namespace Input {
+
 	LPDIRECTINPUT8 pDInput = nullptr;			// DirectInput本体のインターフェース
 	LPDIRECTINPUTDEVICE8 pKeyDevice = nullptr;	// キーボードデバイスオブジェクト
 	BYTE keyState[256] = {0};					// 現在のキーの状態
 	BYTE prevKeyState[256] = {0};				// 前フレームでのキーの状態
+	
+	XMVECTOR mousePosition;						// マウスカーソル位置
 
 	// 初期化
 	void Initialize(HWND hWnd) {
@@ -66,5 +72,16 @@ namespace Input {
 	void Relese() {
 		SAFE_RELEASE(pKeyDevice);
 		SAFE_RELEASE(pDInput);
+	}
+
+	// マウス位置取得
+	XMVECTOR GetMousePosition() {
+		return mousePosition;
+	}
+
+	// マウス位置をセット
+	void SetMousePosition(int x,int y) {
+		mousePosition = XMVectorSet((float)x, (float)y, 0, 0);
+		Debug::Log(XMVectorGetX(mousePosition));
 	}
 };

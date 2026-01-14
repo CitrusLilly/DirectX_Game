@@ -1,11 +1,15 @@
-﻿  Sprite.cpp
-Z:\Cpura\DirectX_Game\Sprite.cpp(99,35): warning C4244: '引数': 'uint64_t' から 'UINT' への変換です。データが失われる可能性があります。
-Z:\Cpura\DirectX_Game\Sprite.cpp(124,39): warning C4267: '=': 'size_t' から 'UINT' に変換しました。データが失われているかもしれません。
-Z:\Cpura\DirectX_Game\Sprite.cpp(152,29): warning C4267: '=': 'size_t' から 'UINT' に変換しました。データが失われているかもしれません。
-  main.cpp
+﻿  Input.cpp
   C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\dinput.h: DIRECTINPUT_VERSION undefined. Defaulting to version 0x0800
-  コードを生成中...
-  DirectX_Game.vcxproj -> Z:\Cpura\DirectX_Game\x64\Debug\DirectX_Game.exe
-  Z:\Cpura\DirectX_Game\Simple2D.hlsl
-  Z:\Cpura\DirectX_Game\Simple3D.hlsl
-          2 個のファイルをコピーしました。
+Z:\Cpura\DirectX_Game\Debug.h(19,37): error C3861: 'ToString': 識別子が見つかりませんでした
+  (ソース ファイル 'Input.cpp' をコンパイルしています)
+      Z:\Cpura\DirectX_Game\Debug.h(19,37):
+      'ToString': 関数はテンプレート定義コンテキストで宣言されておらず、インスタンス化コンテキストで引数依存のルックアップによってのみ検出できます
+      Z:\Cpura\DirectX_Game\Debug.h(19,37):
+      テンプレートインスタンス化コンテキスト (最初に最も古いもの) は
+          Z:\Cpura\DirectX_Game\Input.cpp(85,10):
+          コンパイル対象の関数 テンプレート インスタンス化 'void Debug::Log<DirectX::XMVECTOR>(const T &)' のリファレンスを確認してください
+          with
+          [
+              T=DirectX::XMVECTOR
+          ]
+  

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <dinput.h>
+#include <DirectXMath.h>
 
 #pragma comment(lib,"dxguid.lib")
 #pragma comment(lib,"dInput8.lib")
@@ -20,4 +21,8 @@ namespace Input {
 	bool IsKeyUp(int keyCode);
 	// 解放
 	void Relese();
+	// マウス位置取得
+    DirectX::XMVECTOR GetMousePosition();
+	// マウス位置をセット
+	void SetMousePosition(int x,int y);
 };
