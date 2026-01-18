@@ -1,3 +1,4 @@
+#include "CoreEngine.h"
 #include "Dice.h"
 
 // 頂点情報の初期化
@@ -42,7 +43,7 @@ void Dice::InitVertexData() {
 
 // インデックス情報の初期化
 void Dice::InitIndexData() {
-	index_ = { 
+	index_ = {
 		0,1,2,
 		0,2,3,
 		4,5,6,

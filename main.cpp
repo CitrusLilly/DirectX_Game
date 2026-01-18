@@ -1,14 +1,9 @@
 // インクルード
 #include <Windows.h>
 #include <d3d11.h>
-#include "Direct3D.h"
-#include "Quad.h"
-#include "Camera.h"
-#include "Dice.h"
+#include "CoreEngine.h"
 #include "Sprite.h"
-#include "Transform.h"
 #include "Fbx.h"
-#include "Input.h"
 
 // リンカ
 #pragma comment(lib,"d3d11.lib")
@@ -21,6 +16,8 @@
 
 // プロトタイプ宣言
 LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+
+using namespace CoreEngine;
 
 Sprite* pSprite;
 Fbx* pFbx;

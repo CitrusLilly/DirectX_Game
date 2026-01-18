@@ -4,27 +4,28 @@
 
 using namespace DirectX;
 
-//──────────────────────────────
-// カメラ
-//──────────────────────────────
-namespace Camera {
-	// 初期化 (プロジェクション行列作成)
-	void Initialize();
+namespace CoreEngine {
 
-	// 更新 (ビュー行列作成)
-	void Update();
+	// カメラ
+	namespace Camera {
+		// 初期化 (プロジェクション行列作成)
+		void Initialize();
 
-	// 視点(カメラ位置)を設定
-	void SetPosition(XMVECTOR position);
-	void SetPosition(XMFLOAT3 position);
+		// 更新 (ビュー行列作成)
+		void Update();
 
-	// 焦点(見る位置)を設定
-	void SetTarget(XMVECTOR target);
-	void SetTarget(XMFLOAT3 target);
+		// 視点(カメラ位置)を設定
+		void SetPosition(XMVECTOR position);
+		void SetPosition(XMFLOAT3 position);
 
-	// ビュー行列取得
-	XMMATRIX GetViewMatrix();
+		// 焦点(見る位置)を設定
+		void SetTarget(XMVECTOR target);
+		void SetTarget(XMFLOAT3 target);
 
-	// プロジェクション行列取得
-	XMMATRIX GetProjectionMatrix();
-};
+		// ビュー行列取得
+		XMMATRIX GetViewMatrix();
+
+		// プロジェクション行列取得
+		XMMATRIX GetProjectionMatrix();
+	};
+}

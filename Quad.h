@@ -32,12 +32,12 @@ protected:
 	ID3D11Buffer* pIndexBuffer_;	// インデックスバッファ
 	ID3D11Buffer* pConstantBuffer_; // コンスタントバッファ
 
-	Texture* pTexture_;				// テクスチャ
+	CoreEngine::Texture* pTexture_;	// テクスチャ
 public:
 	Quad();								// コンストラクタ
 	~Quad();							// デストラクタ
 	HRESULT Initialize();				// 初期化
-	void Draw(Transform& transform);	// 描画
+	void Draw(CoreEngine::Transform& transform);	// 描画
 	void Release();						// 解放
 private:
 	virtual void InitVertexData();		// 頂点情報の初期化
@@ -48,6 +48,6 @@ private:
 	HRESULT LoadTexture();				// テクスチャ読み込み
 
 	// ────────────Draw関数から呼ばれる関数────────────────────
-	void PassDataToCB(Transform transform);	// コンスタントバッファにデータを送る
-	void SetBufferToPipeline();					// パイプラインに各種バッファをセットする
+	void PassDataToCB(CoreEngine::Transform transform);	// コンスタントバッファにデータを送る
+	void SetBufferToPipeline();							// パイプラインに各種バッファをセットする
 };

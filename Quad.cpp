@@ -1,5 +1,9 @@
+#include "CoreEngine.h"
 #include "Quad.h"
 #include "Camera.h"
+
+using namespace CoreEngine;
+
 // コンストラクタ
 Quad::Quad()
 	: pVertexBuffer_(nullptr)
@@ -7,8 +11,7 @@ Quad::Quad()
 	, pConstantBuffer_(nullptr)
 	, pTexture_(nullptr)
 	, vertexNum_(0)
-	, indexNum_(0)
-{
+	, indexNum_(0) {
 }
 
 // デストラクタ
@@ -20,23 +23,23 @@ Quad::~Quad() {
 HRESULT Quad::Initialize() {
 	// 頂点情報初期化
 	InitVertexData();
-	if(FAILED(CreateVertexBuffer())) {
+	if (FAILED(CreateVertexBuffer())) {
 		return E_FAIL;
 	}
 
 	// インデックス情報初期化
 	InitIndexData();
-	if(FAILED(CreateIndexBuffer())) {
+	if (FAILED(CreateIndexBuffer())) {
 		return E_FAIL;
 	}
 
 	// コンスタントバッファ作成
-	if(FAILED(CreateConstantBuffer())) {
+	if (FAILED(CreateConstantBuffer())) {
 		return E_FAIL;
 	}
 
 	// テクスチャ読み込み
-	if(FAILED(LoadTexture())) {
+	if (FAILED(LoadTexture())) {
 		return E_FAIL;
 	}
 
@@ -177,7 +180,7 @@ HRESULT Quad::LoadTexture() {
 	pTexture_ = new Texture();
 	HRESULT hr;
 	hr = pTexture_->Load("Assets\\dice.png");
-	if(FAILED(hr)) {
+	if (FAILED(hr)) {
 		MessageBox(NULL, "テクスチャの読み込みに失敗しました。", "エラー", MB_OK);
 		return E_FAIL;
 	}
@@ -187,6 +190,7 @@ HRESULT Quad::LoadTexture() {
 
 // コンスタントバッファに情報を渡す
 void Quad::PassDataToCB(Transform transform) {
+	using namespace CoreEngine;
 	// コンスタントバッファに渡す情報
 	CONSTANT_BUFFER cb = {};
 	// 行列の転置

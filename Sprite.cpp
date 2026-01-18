@@ -1,6 +1,9 @@
+#include "CoreEngine.h"
 #include "Sprite.h"
 #include "Camera.h"
 #include "Debug.h"
+
+using namespace CoreEngine;
 
 // コンストラクタ
 Sprite::Sprite()

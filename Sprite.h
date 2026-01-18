@@ -5,6 +5,7 @@
 #include <vector>
 #include "Transform.h"
 
+
 class Sprite {
 	// コンスタントバッファー
 	struct CONSTANT_BUFFER {
@@ -31,7 +32,7 @@ public:
 	~Sprite();							// デストラクタ
 	HRESULT Initialize();				// 初期化
 	void SetPivot(Pivot pivot);			// ピボットの設定
-	void Draw(Transform& transform);	// 描画
+	void Draw(CoreEngine::Transform& transform);	// 描画
 	void Release();						// 解放
 
 protected:
@@ -48,7 +49,7 @@ protected:
 
 	ID3D11Buffer* pConstantBuffer_; // コンスタントバッファ
 
-	Texture* pTexture_;				// テクスチャ
+	CoreEngine::Texture* pTexture_;	// テクスチャ
 private:
 	// ────────────Initializeから呼ばれる関数──────────────────
 	virtual void InitVertexData();		// 頂点情報の初期化
