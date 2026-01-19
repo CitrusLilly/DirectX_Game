@@ -10,7 +10,3 @@
 #include "Camera.h"
 #include "Transform.h"
 #include "Texture.h"
-
-//#include "Fbx.h"
-//#include "Quad.h"
-//#include "Dice.h"

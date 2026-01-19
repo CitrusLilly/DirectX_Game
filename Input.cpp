@@ -84,7 +84,6 @@ namespace CoreEngine {
 		// マウス位置をセット
 		void SetMousePosition(int x, int y) {
 			mousePosition = XMVectorSet((float)x, (float)y, 0, 0);
-			Debug::Log(mousePosition);
 		}
 	};
 }

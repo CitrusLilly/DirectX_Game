@@ -3,7 +3,6 @@
 #include "Direct3D.h"
 #include "Camera.h"
 #include <assert.h>
-#include "Debug.h"
 
 namespace CoreEngine {
 
