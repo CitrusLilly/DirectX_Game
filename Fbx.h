@@ -21,6 +21,8 @@ namespace CoreEngine {
 		struct MATERIAL {
 			Texture* pTexture;	// テクスチャ
 			XMFLOAT4 diffuse;	// 色
+			XMFLOAT3 specular;	// RGB
+			float	 shininess;	// 光沢
 		};
 
 		// コンスタントバッファー
@@ -51,6 +53,8 @@ namespace CoreEngine {
 	public:
 		// 初期化
 		Fbx();
+		// デストラクタ
+		~Fbx();
 		// FBXファイルを読み込む
 		HRESULT Load(string fileName);
 		// 頂点バッファの初期化

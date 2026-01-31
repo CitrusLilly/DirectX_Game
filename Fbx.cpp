@@ -18,19 +18,58 @@ namespace CoreEngine {
 
 	}
 
+	// デストラクタ
+	Fbx::~Fbx() {
+		Release();
+	}
+
 	// FBXファイルを読み込む
 	HRESULT Fbx::Load(string fileName) {
 		// マネージャを生成
 		FbxManager* pFbxManager = FbxManager::Create();
+		if (!pFbxManager) {
+			Debug::Log("FBXマネージャー生成失敗");
+			pFbxManager->Destroy();
+			return E_FAIL;
+		}
+
+		// シーンを生成
+		FbxScene* pFbxScene = FbxScene::Create(pFbxManager, "fbxscene");
+		if (!pFbxScene) {
+			Debug::Log("FBXシーン生成失敗");
+			pFbxManager->Destroy();
+			return E_FAIL;
+		}
 
 		// インポーターを生成
 		FbxImporter* fbxImporter = FbxImporter::Create(pFbxManager, "imp");
-		fbxImporter->Initialize(fileName.c_str(), -1, pFbxManager->GetIOSettings());
+		if (!fbxImporter) {
+			Debug::Log("FBXインポーター生成失敗");
+			pFbxManager->Destroy();
+			pFbxScene->Destroy();
+			return E_FAIL;
+		}
+		// インポート
+		if (!fbxImporter->Initialize(fileName.c_str(), -1, pFbxManager->GetIOSettings())) {
+			Debug::Log("FBXインポート失敗");
+			fbxImporter->Destroy();
+			pFbxScene->Destroy();
+			pFbxManager->Destroy();
+			return E_FAIL;
+		}
 
 		// SceneオブジェクトにFBXファイルの情報を流し込む
-		FbxScene* pFbxScene = FbxScene::Create(pFbxManager, "fbxscene");
-		fbxImporter->Import(pFbxScene);
-		fbxImporter->Destroy();
+		if (!fbxImporter->Import(pFbxScene)) {
+			Debug::Log("インポート失敗");
+			fbxImporter->Destroy();
+			pFbxScene->Destroy();
+			pFbxManager->Destroy();
+			return E_FAIL;
+		}
+
+		// ポリゴンを三角形に変換
+		FbxGeometryConverter converter(pFbxManager);
+		converter.Triangulate(pFbxScene, true);
 
 		// メッシュ情報を取得
 		FbxNode* rootNode = pFbxScene->GetRootNode();	// ルートノードを取得
@@ -61,7 +100,9 @@ namespace CoreEngine {
 		// カレントディレクトリを戻す
 		SetCurrentDirectoryA(defaultCurrentDir);
 
-		// マネージャを解放
+		// 解放
+		fbxImporter->Destroy();
+		pFbxScene->Destroy();
 		pFbxManager->Destroy();
 		return S_OK;
 	}
@@ -116,6 +157,8 @@ namespace CoreEngine {
 		if (FAILED(hr)) {
 			MessageBox(nullptr, "頂点バッファの作成に失敗しました", "エラー", MB_OK);
 		}
+
+		SAFE_DELETE_ARRAY(vertices);
 	}
 
 	// インデックスバッファの初期化
@@ -123,10 +166,12 @@ namespace CoreEngine {
 		pIndexBuffer_ = new ID3D11Buffer * [materialCount_];
 		indexCount_ = vector<int>(materialCount_);
 
-		// ポリゴン数 * 3 ＝ 全頂点分用意
-		vector<int> index(polygonCount_ * 3);
+		
 
 		for (int i = 0; i < materialCount_; i++) {
+			// ポリゴン数 * 3 ＝ 全頂点分用意
+			vector<int> index;
+			index.reserve(polygonCount_ * 3);
 			int count = 0;
 
 			// 全ポリゴン
@@ -137,7 +182,7 @@ namespace CoreEngine {
 				if (mtlID == i) {
 					// 3頂点分
 					for (DWORD vertex = 0; vertex < 3; vertex++) {
-						index[count] = mesh->GetPolygonVertex(poly, vertex);
+						index.push_back(mesh->GetPolygonVertex(poly, vertex));
 						count++;
 					}
 				}
@@ -147,7 +192,7 @@ namespace CoreEngine {
 			// インデックスバッファの作成
 			D3D11_BUFFER_DESC bd;
 			bd.Usage = D3D11_USAGE_DEFAULT;
-			bd.ByteWidth = sizeof(int) * polygonCount_ * 3;
+			bd.ByteWidth = sizeof(int) * count;
 			bd.BindFlags = D3D11_BIND_INDEX_BUFFER;
 			bd.CPUAccessFlags = 0;
 			bd.MiscFlags = 0;
@@ -228,9 +273,31 @@ namespace CoreEngine {
 				pMaterialList_[i].pTexture = nullptr;
 
 				// マテリアルの色を適用
-				FbxSurfaceLambert* pMaterial = (FbxSurfaceLambert*)pNode->GetMaterial(i);
-				FbxDouble3 diffuse = pMaterial->Diffuse;
-				pMaterialList_[i].diffuse = XMFLOAT4((float)diffuse[0], (float)diffuse[1], (float)diffuse[2], 1.0f);
+				// Lambertマテリアルの場合
+				if (pMaterial->GetClassId().Is(FbxSurfaceLambert::ClassId)) {
+					Debug::Log("Lambertマテリアル適用");
+					FbxSurfaceLambert* pLambert = (FbxSurfaceLambert*)pMaterial;
+
+					// Diffuse
+					FbxDouble3 diffuse = pLambert->Diffuse;
+					pMaterialList_[i].diffuse = XMFLOAT4((float)diffuse[0], (float)diffuse[1], (float)diffuse[2], 1.0f);
+				// Phongマテリアルの場合
+				} else if(pMaterial->GetClassId().Is(FbxSurfacePhong::ClassId)) {
+					Debug::Log("Phongマテリアル適用");
+					FbxSurfacePhong* pPhong = (FbxSurfacePhong*)pMaterial;
+
+					// Diffuse
+					FbxDouble3 diffuse = pPhong->Diffuse;
+					pMaterialList_[i].diffuse = XMFLOAT4((float)diffuse[0], (float)diffuse[1], (float)diffuse[2], 1.0f);
+
+					// Specular
+					FbxDouble3 specular = pPhong->Specular;
+					pMaterialList_[i].specular = XMFLOAT3((float)specular[0], (float)specular[1], (float)specular[2]);
+
+					// Shininess
+					pMaterialList_[i].shininess = (float)pPhong->Shininess;
+				}
+				
 			}
 		}
 	}
@@ -297,9 +364,21 @@ namespace CoreEngine {
 
 	// 解放
 	void Fbx::Release() {
-		SAFE_DELETE(pMaterialList_);
-		SAFE_RELEASE(pConstantBuffer_);
+		for (int i = 0; i < materialCount_; i++) {
+			if (pIndexBuffer_[i] != nullptr) {
+				SAFE_RELEASE(pIndexBuffer_[i]);
+			}
+		}
 		SAFE_DELETE_ARRAY(pIndexBuffer_);
+
+		for (int i = 0; i < materialCount_; i++) {
+			if (pMaterialList_[i].pTexture != nullptr) {
+				pMaterialList_[i].pTexture->Release();
+			}
+		}
+		SAFE_DELETE_ARRAY(pMaterialList_);
+		
+		SAFE_RELEASE(pConstantBuffer_);
 		SAFE_RELEASE(pVertexBuffer_);
 	}
 }
