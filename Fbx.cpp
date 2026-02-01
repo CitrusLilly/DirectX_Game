@@ -67,9 +67,32 @@ namespace CoreEngine {
 			return E_FAIL;
 		}
 
-		// ポリゴンを三角形に変換
+		
 		FbxGeometryConverter converter(pFbxManager);
+		// TODO:まだメッシュが１つしか対応していないので分割すると１つしか表示されなくなる
+		// メッシュに使われているマテリアル単位でメッシュを分割
+		//converter.SplitMeshesPerMaterial(pFbxScene, true);
+		// ポリゴンを三角形に変換
 		converter.Triangulate(pFbxScene, true);
+
+
+
+		// ************************ここからループで読み込むテスト**********************
+		
+		// マテリアルの数を取得
+		materialCount_ = pFbxScene->GetSrcObjectCount<FbxSurfaceMaterial>();
+
+		// Meshの数を取得
+		int meshNum = pFbxScene->GetSrcObjectCount<FbxMesh>();
+		// メッシュ作成
+		for (int i = 0; i < meshNum; i++) {
+			CreateMesh(pFbxScene->GetSrcObject<FbxMesh>(i));
+		}
+
+
+		// ************************ここまで***************************
+
+
 
 		// メッシュ情報を取得
 		FbxNode* rootNode = pFbxScene->GetRootNode();	// ルートノードを取得
@@ -77,8 +100,8 @@ namespace CoreEngine {
 		FbxMesh* mesh = pNode->GetMesh();				// メッシュを取得
 
 		// 各情報の個数を取得
-		vertexCount_ = mesh->GetControlPointsCount();	// 頂点数
 		polygonCount_ = mesh->GetPolygonCount();		// ポリゴン数
+		vertexCount_ = polygonCount_ * 3;				// 頂点数
 		materialCount_ = pNode->GetMaterialCount();		// マテリアル数
 
 		// 現在のcurrentディレクトリを覚えておく
@@ -165,8 +188,6 @@ namespace CoreEngine {
 	void Fbx::InitIndex(fbxsdk::FbxMesh* mesh) {
 		pIndexBuffer_ = new ID3D11Buffer * [materialCount_];
 		indexCount_ = vector<int>(materialCount_);
-
-		
 
 		for (int i = 0; i < materialCount_; i++) {
 			// ポリゴン数 * 3 ＝ 全頂点分用意
@@ -380,5 +401,107 @@ namespace CoreEngine {
 		
 		SAFE_RELEASE(pConstantBuffer_);
 		SAFE_RELEASE(pVertexBuffer_);
+	}
+
+
+	// メッシュを作成
+	void Fbx::CreateMesh(FbxMesh* mesh) {
+		MeshData meshData;
+		LoadVertex(meshData, mesh);
+		LoadIndex(meshData, mesh);
+		LoadNormal(meshData, mesh);
+		LoadUV(meshData, mesh);
+		LoadColor(meshData, mesh);
+
+		meshList.push_back(meshData);
+	}
+
+	// 頂点読み込み
+	void Fbx::LoadVertex(MeshData& meshData, FbxMesh* mesh) {
+		// 頂点バッファの取得
+		FbxVector4* vertexs = mesh->GetControlPoints();
+		// インデックスバッファの取得
+		int* indexs = mesh->GetPolygonVertices();
+		// 頂点座標の数の取得
+		int polyVertexCount = mesh->GetPolygonVertexCount();
+		
+		for (int i = 0; i < polyVertexCount; i++) {
+			CustomVERTEX vertex;
+			// インデックスバッファから頂点番号を取得
+			int index = indexs[i];
+
+			// 頂点座標リストから座標を取得
+			vertex.position.X = (float)-vertexs[index][0];
+			vertex.position.X = (float)vertexs[index][1];
+			vertex.position.X = (float)vertexs[index][2];
+
+			// 追加
+			meshData.vertex.push_back(vertex);
+		}
+	}
+
+	// インデックス読み込み
+	void Fbx::LoadIndex(MeshData& meshData, FbxMesh* mesh) {
+		// ポリゴン数の取得
+		int polygonCount = mesh->GetPolygonCount();
+
+		// ポリゴンの数だけ連番として保存
+		for (int i = 0; i < polygonCount; i++) {
+			meshData.index.push_back(i * 3 + 2);
+			meshData.index.push_back(i * 3 + 1);
+			meshData.index.push_back(i * 3);
+		}
+	}
+
+	// 法線読み込み
+	void Fbx::LoadNormal(MeshData& meshData, FbxMesh* mesh) {
+		FbxArray<FbxVector4> normals;
+		// 法線リストを取得
+		mesh->GetPolygonVertexNormals(normals);
+
+		// 法線設定
+		for (int i = 0; i < normals.Size(); i++) {
+			meshData.vertex[i].normal.X = (float)-normals[i][0];
+			meshData.vertex[i].normal.X = (float)normals[i][1];
+			meshData.vertex[i].normal.X = (float)normals[i][2];
+		}
+	}
+
+	// UV読み込み
+	void Fbx::LoadUV(MeshData& meshData, FbxMesh* mesh) {
+		FbxStringList uvsetNames;
+		// UVSetの名前リストを取得
+		mesh->GetUVSetNames(uvsetNames);
+
+		FbxArray<FbxVector2> uvBuffer;
+
+		// UVSetの名前からUVSetを取得する
+		// TODO:まだマルチテクスチャ未対応
+		mesh->GetPolygonVertexUVs(uvsetNames.GetStringAt(0), uvBuffer);
+
+		for (int i = 0; i < uvBuffer.Size(); i++) {
+			FbxVector2& uv = uvBuffer[i];
+
+			meshData.vertex[i].uv.X = (float)uv[0];
+			meshData.vertex[i].uv.Y = (float)(1.0 - uv[1]);
+		}
+	}
+
+	// 頂点カラー読み込み
+	void Fbx::LoadColor(MeshData& meshData, FbxMesh* mesh) {
+		// 頂点カラーデータの数を取得
+		int colorCount = mesh->GetElementVertexColorCount();
+		if (colorCount == 0) {
+			return;
+		}
+
+		// 頂点カラーデータの取得
+		FbxGeometryElementVertexColor* vertexColors = mesh->GetElementVertexColor(0);
+		if (vertexColors == nullptr) {
+			return;
+		}
+
+		//TODO:続きはここから
+
 	}
 }

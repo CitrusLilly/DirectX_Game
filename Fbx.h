@@ -6,6 +6,7 @@
 #include "Transform.h"
 #include "Texture.h"
 #include <vector>
+#include "Utillity.h"
 
 #pragma comment(lib, "libfbxsdk-md.lib")
 #pragma comment(lib, "libxml2-md.lib")
@@ -38,6 +39,7 @@ namespace CoreEngine {
 			XMVECTOR position;	// 頂点座標
 			XMVECTOR uv;		// UV
 			XMVECTOR normal;	// 法線ベクトル
+			Color color;		// 頂点カラー
 		};
 
 		int vertexCount_;	// 頂点数
@@ -69,5 +71,28 @@ namespace CoreEngine {
 		void Draw(Transform& transform);
 		// 解放
 		void Release();
+
+	private:
+		struct MeshData {
+			ID3D11Buffer* pVertexBuffer_;	// 頂点バッファ
+			ID3D11Buffer* pIndexBuffer_;	// インデックスバッファ
+			std::vector<CustomVERTEX> vertex;
+			std::vector<UINT> index;
+		};
+
+		std::vector<MeshData> meshList;		// ロード後のメッシュ
+
+		// メッシュを作成
+		void CreateMesh(FbxMesh* mesh);
+		// 頂点読み込み
+		void LoadVertex(MeshData& meshData, FbxMesh* mesh);
+		// インデックス読み込み
+		void LoadIndex(MeshData& meshData, FbxMesh* mesh);
+		// 法線読み込み
+		void LoadNormal(MeshData& meshData, FbxMesh* mesh);
+		// UV読み込み
+		void LoadUV(MeshData& meshData, FbxMesh* mesh);
+		// 頂点カラー読み込み
+		void LoadColor(MeshData& meshData, FbxMesh* mesh);
 	};
 }
