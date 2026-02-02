@@ -6,6 +6,7 @@
 #include "Transform.h"
 #include "Texture.h"
 #include <vector>
+#include <map>
 #include "Utillity.h"
 
 #pragma comment(lib, "libfbxsdk-md.lib")
@@ -78,9 +79,35 @@ namespace CoreEngine {
 			ID3D11Buffer* pIndexBuffer_;	// インデックスバッファ
 			std::vector<CustomVERTEX> vertex;
 			std::vector<UINT> index;
+			std::string materialName;
+
+			// コンストラクタで初期化
+			MeshData()
+				:pVertexBuffer_(nullptr)
+				,pIndexBuffer_(nullptr)
+				,vertex()
+				,index() {
+			}
+
+			// デストラクタ
+			~MeshData() {
+				SAFE_RELEASE(pVertexBuffer_);
+				SAFE_RELEASE(pIndexBuffer_);
+			}
 		};
 
-		std::vector<MeshData> meshList;		// ロード後のメッシュ
+		std::vector<MeshData> meshList;
+		std::map<std::string, Material> materialList;
+
+		// FBXファイルの読み込み
+		bool LoadFbxFile(std::string fileName);
+		// 頂点バッファの作成
+		bool CreateVertexBuffer();
+		// インデックスバッファの作成
+		bool CreateIndexBuffer();
+
+		// マテリアルの読み込み
+		void LoadMaterial(FbxSurfaceMaterial* material);
 
 		// メッシュを作成
 		void CreateMesh(FbxMesh* mesh);
@@ -94,5 +121,7 @@ namespace CoreEngine {
 		void LoadUV(MeshData& meshData, FbxMesh* mesh);
 		// 頂点カラー読み込み
 		void LoadColor(MeshData& meshData, FbxMesh* mesh);
+
+
 	};
 }

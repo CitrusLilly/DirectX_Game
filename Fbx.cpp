@@ -25,12 +25,137 @@ namespace CoreEngine {
 
 	// FBXファイルを読み込む
 	HRESULT Fbx::Load(string fileName) {
+		// FBXファイルを読み込む
+		if (!LoadFbxFile(fileName)) {
+			Debug::Log("FBXファイル読み込み失敗");
+			return E_FAIL;
+		}
+
+		// 頂点バッファの作成
+		if (!CreateVertexBuffer()) {
+			Debug::Log("FBX頂点バッファの作成に失敗");
+			return E_FAIL;
+		}
+
+		// インデックスバッファの作成
+		if (!CreateIndexBuffer()) {
+			Debug::Log("FBXインデックスバッファの作成に失敗");
+			return E_FAIL;
+		}
+
+		//// マネージャを生成
+		//FbxManager* pFbxManager = FbxManager::Create();
+		//if (!pFbxManager) {
+		//	Debug::Log("FBXマネージャー生成失敗");
+		//	pFbxManager->Destroy();
+		//	return E_FAIL;
+		//}
+
+		//// シーンを生成
+		//FbxScene* pFbxScene = FbxScene::Create(pFbxManager, "fbxscene");
+		//if (!pFbxScene) {
+		//	Debug::Log("FBXシーン生成失敗");
+		//	pFbxManager->Destroy();
+		//	return E_FAIL;
+		//}
+
+		//// インポーターを生成
+		//FbxImporter* fbxImporter = FbxImporter::Create(pFbxManager, "imp");
+		//if (!fbxImporter) {
+		//	Debug::Log("FBXインポーター生成失敗");
+		//	pFbxManager->Destroy();
+		//	pFbxScene->Destroy();
+		//	return E_FAIL;
+		//}
+		//// インポート
+		//if (!fbxImporter->Initialize(fileName.c_str(), -1, pFbxManager->GetIOSettings())) {
+		//	Debug::Log("FBXインポート失敗");
+		//	fbxImporter->Destroy();
+		//	pFbxScene->Destroy();
+		//	pFbxManager->Destroy();
+		//	return E_FAIL;
+		//}
+
+		//// SceneオブジェクトにFBXファイルの情報を流し込む
+		//if (!fbxImporter->Import(pFbxScene)) {
+		//	Debug::Log("インポート失敗");
+		//	fbxImporter->Destroy();
+		//	pFbxScene->Destroy();
+		//	pFbxManager->Destroy();
+		//	return E_FAIL;
+		//}
+
+		//
+		//FbxGeometryConverter converter(pFbxManager);
+		//// TODO:まだメッシュが１つしか対応していないので分割すると１つしか表示されなくなる
+		//// メッシュに使われているマテリアル単位でメッシュを分割
+		////converter.SplitMeshesPerMaterial(pFbxScene, true);
+		//// ポリゴンを三角形に変換
+		//converter.Triangulate(pFbxScene, true);
+
+
+
+		//// ************************ここからループで読み込むテスト**********************
+		//
+		//// マテリアルの数を取得
+		//materialCount_ = pFbxScene->GetSrcObjectCount<FbxSurfaceMaterial>();
+
+		//// Meshの数を取得
+		//int meshNum = pFbxScene->GetSrcObjectCount<FbxMesh>();
+		//// メッシュ作成
+		//for (int i = 0; i < meshNum; i++) {
+		//	CreateMesh(pFbxScene->GetSrcObject<FbxMesh>(i));
+		//}
+
+
+		//// ************************ここまで***************************
+
+
+
+		//// メッシュ情報を取得
+		//FbxNode* rootNode = pFbxScene->GetRootNode();	// ルートノードを取得
+		//FbxNode* pNode = rootNode->GetChild(0);			// 頂点、インデックス、マテリアルを取得
+		//FbxMesh* mesh = pNode->GetMesh();				// メッシュを取得
+
+		//// 各情報の個数を取得
+		//polygonCount_ = mesh->GetPolygonCount();		// ポリゴン数
+		//vertexCount_ = polygonCount_ * 3;				// 頂点数
+		//materialCount_ = pNode->GetMaterialCount();		// マテリアル数
+
+		//// 現在のcurrentディレクトリを覚えておく
+		//char defaultCurrentDir[MAX_PATH];
+		//GetCurrentDirectoryA(MAX_PATH, defaultCurrentDir);
+
+		//// 引数のfileNameからディレクトリ部分を取得
+		//char dir[MAX_PATH];
+		//_splitpath_s(fileName.c_str(), nullptr, 0, dir, MAX_PATH, nullptr, 0, nullptr, 0);
+
+		//// カレントディレクトリを変更
+		//SetCurrentDirectoryA(dir);
+
+		//InitVertex(mesh);		// 頂点バッファの初期化
+		//InitIndex(mesh);		// インデックスバッファの初期化
+		//InitConstantBuffer();	// コンスタントバッファの初期化
+		//InitMaterial(pNode);	// マテリアルの初期化
+
+		//// カレントディレクトリを戻す
+		//SetCurrentDirectoryA(defaultCurrentDir);
+
+		//// 解放
+		//fbxImporter->Destroy();
+		//pFbxScene->Destroy();
+		//pFbxManager->Destroy();
+		return S_OK;
+	}
+
+	// FBXファイルの読み込み
+	bool Fbx::LoadFbxFile(string fileName) {
 		// マネージャを生成
 		FbxManager* pFbxManager = FbxManager::Create();
 		if (!pFbxManager) {
 			Debug::Log("FBXマネージャー生成失敗");
 			pFbxManager->Destroy();
-			return E_FAIL;
+			return false;
 		}
 
 		// シーンを生成
@@ -38,7 +163,7 @@ namespace CoreEngine {
 		if (!pFbxScene) {
 			Debug::Log("FBXシーン生成失敗");
 			pFbxManager->Destroy();
-			return E_FAIL;
+			return false;
 		}
 
 		// インポーターを生成
@@ -47,7 +172,7 @@ namespace CoreEngine {
 			Debug::Log("FBXインポーター生成失敗");
 			pFbxManager->Destroy();
 			pFbxScene->Destroy();
-			return E_FAIL;
+			return false;
 		}
 		// インポート
 		if (!fbxImporter->Initialize(fileName.c_str(), -1, pFbxManager->GetIOSettings())) {
@@ -55,7 +180,7 @@ namespace CoreEngine {
 			fbxImporter->Destroy();
 			pFbxScene->Destroy();
 			pFbxManager->Destroy();
-			return E_FAIL;
+			return false;
 		}
 
 		// SceneオブジェクトにFBXファイルの情報を流し込む
@@ -64,14 +189,13 @@ namespace CoreEngine {
 			fbxImporter->Destroy();
 			pFbxScene->Destroy();
 			pFbxManager->Destroy();
-			return E_FAIL;
+			return false;
 		}
 
 		
 		FbxGeometryConverter converter(pFbxManager);
-		// TODO:まだメッシュが１つしか対応していないので分割すると１つしか表示されなくなる
 		// メッシュに使われているマテリアル単位でメッシュを分割
-		//converter.SplitMeshesPerMaterial(pFbxScene, true);
+		converter.SplitMeshesPerMaterial(pFbxScene, true);
 		// ポリゴンを三角形に変換
 		converter.Triangulate(pFbxScene, true);
 
@@ -80,7 +204,11 @@ namespace CoreEngine {
 		// ************************ここからループで読み込むテスト**********************
 		
 		// マテリアルの数を取得
-		materialCount_ = pFbxScene->GetSrcObjectCount<FbxSurfaceMaterial>();
+		int materialNum = pFbxScene->GetSrcObjectCount<FbxSurfaceMaterial>();
+		// マテリアルの読み込み
+		for (int i = 0; i < materialNum; i++) {
+			LoadMaterial(pFbxScene->GetSrcObject<FbxSurfaceMaterial>(i));
+		}
 
 		// Meshの数を取得
 		int meshNum = pFbxScene->GetSrcObjectCount<FbxMesh>();
@@ -94,16 +222,6 @@ namespace CoreEngine {
 
 
 
-		// メッシュ情報を取得
-		FbxNode* rootNode = pFbxScene->GetRootNode();	// ルートノードを取得
-		FbxNode* pNode = rootNode->GetChild(0);			// 頂点、インデックス、マテリアルを取得
-		FbxMesh* mesh = pNode->GetMesh();				// メッシュを取得
-
-		// 各情報の個数を取得
-		polygonCount_ = mesh->GetPolygonCount();		// ポリゴン数
-		vertexCount_ = polygonCount_ * 3;				// 頂点数
-		materialCount_ = pNode->GetMaterialCount();		// マテリアル数
-
 		// 現在のcurrentディレクトリを覚えておく
 		char defaultCurrentDir[MAX_PATH];
 		GetCurrentDirectoryA(MAX_PATH, defaultCurrentDir);
@@ -115,10 +233,8 @@ namespace CoreEngine {
 		// カレントディレクトリを変更
 		SetCurrentDirectoryA(dir);
 
-		InitVertex(mesh);		// 頂点バッファの初期化
-		InitIndex(mesh);		// インデックスバッファの初期化
 		InitConstantBuffer();	// コンスタントバッファの初期化
-		InitMaterial(pNode);	// マテリアルの初期化
+		//InitMaterial(pNode);	// マテリアルの初期化
 
 		// カレントディレクトリを戻す
 		SetCurrentDirectoryA(defaultCurrentDir);
@@ -127,7 +243,8 @@ namespace CoreEngine {
 		fbxImporter->Destroy();
 		pFbxScene->Destroy();
 		pFbxManager->Destroy();
-		return S_OK;
+
+		return true;
 	}
 
 	// 頂点バッファの初期化
@@ -403,6 +520,71 @@ namespace CoreEngine {
 		SAFE_RELEASE(pVertexBuffer_);
 	}
 
+	// マテリアルの読み込み
+	void Fbx::LoadMaterial(FbxSurfaceMaterial* material) {
+		Material entryMaterial;
+		enum class MaterialOrder {
+			Ambient,
+			Diffuse,
+			Specular,
+			MaxOrder,
+		};
+
+		FbxDouble3 colors[(int)MaterialOrder::MaxOrder];
+		FbxDouble factors[(int)MaterialOrder::MaxOrder];
+		FbxProperty prop = material->FindProperty(FbxSurfaceMaterial::sAmbient);
+		if (material->GetClassId().Is(FbxSurfaceLambert::ClassId)) {
+			const char* elementCheckList[] = {
+				FbxSurfaceMaterial::sAmbient,
+				FbxSurfaceMaterial::sDiffuse,
+			};
+
+			const char* factorCheckList[] = {
+				FbxSurfaceMaterial::sAmbientFactor,
+				FbxSurfaceMaterial::sDiffuseFactor,
+			};
+
+			for (int i = 0; i < 2; i++) {
+
+				prop = material->FindProperty(elementCheckList[i]);
+				if (prop.IsValid()) {
+					colors[i] = prop.Get<FbxDouble3>();
+				} else {
+					colors[i] = FbxDouble3(1.0f, 1.0f, 1.0f);
+				}
+
+				prop = material->FindProperty(factorCheckList[i]);
+				if (prop.IsValid()) {
+					factors[i] = prop.Get<FbxDouble>();
+				} else {
+					factors[i] = 1.0f;
+				}
+			}
+		}
+
+		FbxDouble3 color = colors[(int)MaterialOrder::Ambient];
+		FbxDouble factor = factors[(int)MaterialOrder::Ambient];
+		entryMaterial.SetAmbient((float)color[0], (float)color[1], (float)color[2], (float)factor);
+
+		color = colors[(int)MaterialOrder::Diffuse];
+		factor = factors[(int)MaterialOrder::Diffuse];
+		entryMaterial.SetDiffuse((float)color[0], (float)color[1], (float)color[2], (float)factor);
+
+		materialList[material->GetName()] = entryMaterial;
+
+		// テクスチャ読み込み
+		// Diffuseプロパティの取得
+		prop = material->FindProperty(FbxSurfaceMaterial::sDiffuse);
+		FbxFileTexture* texture = nullptr;
+		std::string keyword;
+		int textureNum = prop.GetSrcObjectCount<FbxFileTexture>();
+		if (textureNum > 0) {
+			// propからテクスチャを取得
+			texture = prop.GetSrcObject<FbxFileTexture>(0);
+		} else {
+			// TODO:続きはここから
+		}
+	}
 
 	// メッシュを作成
 	void Fbx::CreateMesh(FbxMesh* mesh) {
@@ -501,7 +683,82 @@ namespace CoreEngine {
 			return;
 		}
 
-		//TODO:続きはここから
+		// MappingModeが「ポリゴン頂点単位」、ReferenceModeが「インデックス参照」の場合に対応
+		FbxLayerElement::EMappingMode mappingMode = vertexColors->GetMappingMode();
+		FbxLayerElement::EReferenceMode referenceMode = vertexColors->GetReferenceMode();
+
+		if (mappingMode == FbxLayerElement::eByPolygonVertex) {
+			if (referenceMode == FbxLayerElement::eIndexToDirect) {
+				// 頂点カラーバッファ取得
+				FbxLayerElementArrayTemplate<FbxColor>& colors = vertexColors->GetDirectArray();
+				// 頂点カラーインデックスバッファ取得
+				FbxLayerElementArrayTemplate<int>& indexs = vertexColors->GetIndexArray();
+				for (int i = 0; i < indexs.GetCount(); i++) {
+					int id = indexs.GetAt(i);
+					FbxColor color = colors.GetAt(id);
+					meshData.vertex[i].color.Alpha = (float)color.mAlpha;
+					meshData.vertex[i].color.Red = (float)color.mRed;
+					meshData.vertex[i].color.Green = (float)color.mGreen;
+					meshData.vertex[i].color.Blue = (float)color.mBlue;
+				}
+			}
+		}
+	}
+
+	// 頂点バッファの作成
+	bool Fbx::CreateVertexBuffer() {
+		for (auto& mesh : meshList) {
+			// 頂点バッファ作成
+			HRESULT hr = {};
+			D3D11_BUFFER_DESC bufferDesc;
+			bufferDesc.ByteWidth = sizeof(CustomVERTEX) * (UINT)mesh.vertex.size();
+			bufferDesc.Usage = D3D11_USAGE_DEFAULT;
+			bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+			bufferDesc.CPUAccessFlags = 0;
+			bufferDesc.MiscFlags = 0;
+			bufferDesc.StructureByteStride = 0;
+
+			D3D11_SUBRESOURCE_DATA subResource;
+			subResource.pSysMem = &mesh.vertex[0];
+			subResource.SysMemPitch = 0;
+			subResource.SysMemSlicePitch = 0;
+
+			hr = Direct3D::pDevice_->CreateBuffer(&bufferDesc, &subResource, &mesh.pVertexBuffer_);
+			if (FAILED(hr)) {
+				MessageBox(nullptr, "頂点バッファの作成に失敗しました", "エラー", MB_OK);
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	// インデックスバッファの作成
+	bool Fbx::CreateIndexBuffer() {
+		for (auto& mesh : meshList) {
+			// 頂点バッファ作成
+			HRESULT hr = {};
+			D3D11_BUFFER_DESC bufferDesc;
+			bufferDesc.ByteWidth = sizeof(UINT) * (UINT)mesh.index.size();
+			bufferDesc.Usage = D3D11_USAGE_DEFAULT;
+			bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+			bufferDesc.CPUAccessFlags = 0;
+			bufferDesc.MiscFlags = 0;
+			bufferDesc.StructureByteStride = 0;
+
+			D3D11_SUBRESOURCE_DATA subResource;
+			subResource.pSysMem = &mesh.index[0];
+			subResource.SysMemPitch = 0;
+			subResource.SysMemSlicePitch = 0;
+
+			hr = Direct3D::pDevice_->CreateBuffer(&bufferDesc, &subResource, &mesh.pIndexBuffer_);
+			if (FAILED(hr)) {
+				MessageBox(nullptr, "インデックスバッファの作成に失敗しました", "エラー", MB_OK);
+				return false;
+			}
+		}
+
+		return true;
 
 	}
 }
