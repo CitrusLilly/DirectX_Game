@@ -563,27 +563,47 @@ namespace CoreEngine {
 		}
 
 		FbxDouble3 color = colors[(int)MaterialOrder::Ambient];
-		FbxDouble factor = factors[(int)MaterialOrder::Ambient];
+		FbxDouble factor = factors[(int)MaterialOrder::Ambient] ;
 		entryMaterial.SetAmbient((float)color[0], (float)color[1], (float)color[2], (float)factor);
 
 		color = colors[(int)MaterialOrder::Diffuse];
 		factor = factors[(int)MaterialOrder::Diffuse];
 		entryMaterial.SetDiffuse((float)color[0], (float)color[1], (float)color[2], (float)factor);
 
-		materialList[material->GetName()] = entryMaterial;
+		materialList_[material->GetName()] = entryMaterial;
 
 		// テクスチャ読み込み
 		// Diffuseプロパティの取得
 		prop = material->FindProperty(FbxSurfaceMaterial::sDiffuse);
 		FbxFileTexture* texture = nullptr;
 		std::string keyword;
+
 		int textureNum = prop.GetSrcObjectCount<FbxFileTexture>();
 		if (textureNum > 0) {
 			// propからテクスチャを取得
 			texture = prop.GetSrcObject<FbxFileTexture>(0);
 		} else {
-			// TODO:続きはここから
+			// マルチテクスチャの可能性を確認
+			int layerNum = prop.GetSrcObjectCount<FbxLayeredTexture>();
+			if (layerNum > 0) {
+				texture = prop.GetSrcObject<FbxFileTexture>(0);
+			}
 		}
+
+		if (texture != nullptr && LoadTexture(texture,keyword)) {
+			// 読み込んだテクスチャとマテリアルの関係を覚えておく
+			materialLinks_[material->GetName()] = textures_[keyword];
+		}
+	}
+
+	// テクスチャの読み込み
+	bool Fbx::LoadTexture(FbxFileTexture* texture, std::string& keyword) {
+		if (texture == nullptr) {
+			return false;
+		}
+
+		// ファイル名を取得
+		std::string filePath = texture->GetRelativeFileName();
 	}
 
 	// メッシュを作成
@@ -595,7 +615,7 @@ namespace CoreEngine {
 		LoadUV(meshData, mesh);
 		LoadColor(meshData, mesh);
 
-		meshList.push_back(meshData);
+		meshList_.push_back(meshData);
 	}
 
 	// 頂点読み込み
@@ -705,9 +725,28 @@ namespace CoreEngine {
 		}
 	}
 
+	// マテリアル名読み込み
+	void Fbx::SetMaterialName(MeshData& meshData, FbxMesh* mesh) {
+		// マテリアルがなければ処理しない
+		if (mesh->GetElementMaterialCount() == 0) {
+			meshData.materialName = "";
+			return;
+		}
+
+		// Mesh側のマテリアル情報を取得
+		FbxLayerElementMaterial* material = mesh->GetElementMaterial(0);
+		int index = material->GetIndexArray().GetAt(0);
+		FbxSurfaceMaterial* surfaceMaterial = mesh->GetNode()->GetSrcObject<FbxSurfaceMaterial>(index);
+		if (surfaceMaterial != nullptr) {
+			meshData.materialName = surfaceMaterial->GetName();
+		} else {
+			meshData.materialName = "";
+		}
+	}
+
 	// 頂点バッファの作成
 	bool Fbx::CreateVertexBuffer() {
-		for (auto& mesh : meshList) {
+		for (auto& mesh : meshList_) {
 			// 頂点バッファ作成
 			HRESULT hr = {};
 			D3D11_BUFFER_DESC bufferDesc;
@@ -723,7 +762,7 @@ namespace CoreEngine {
 			subResource.SysMemPitch = 0;
 			subResource.SysMemSlicePitch = 0;
 
-			hr = Direct3D::pDevice_->CreateBuffer(&bufferDesc, &subResource, &mesh.pVertexBuffer_);
+			hr = Direct3D::pDevice_->CreateBuffer(&bufferDesc, &subResource, &mesh.pVertexBuffer);
 			if (FAILED(hr)) {
 				MessageBox(nullptr, "頂点バッファの作成に失敗しました", "エラー", MB_OK);
 				return false;
@@ -735,7 +774,7 @@ namespace CoreEngine {
 
 	// インデックスバッファの作成
 	bool Fbx::CreateIndexBuffer() {
-		for (auto& mesh : meshList) {
+		for (auto& mesh : meshList_) {
 			// 頂点バッファ作成
 			HRESULT hr = {};
 			D3D11_BUFFER_DESC bufferDesc;
@@ -751,7 +790,7 @@ namespace CoreEngine {
 			subResource.SysMemPitch = 0;
 			subResource.SysMemSlicePitch = 0;
 
-			hr = Direct3D::pDevice_->CreateBuffer(&bufferDesc, &subResource, &mesh.pIndexBuffer_);
+			hr = Direct3D::pDevice_->CreateBuffer(&bufferDesc, &subResource, &mesh.pIndexBuffer);
 			if (FAILED(hr)) {
 				MessageBox(nullptr, "インデックスバッファの作成に失敗しました", "エラー", MB_OK);
 				return false;

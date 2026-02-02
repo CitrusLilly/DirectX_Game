@@ -75,29 +75,31 @@ namespace CoreEngine {
 
 	private:
 		struct MeshData {
-			ID3D11Buffer* pVertexBuffer_;	// 頂点バッファ
-			ID3D11Buffer* pIndexBuffer_;	// インデックスバッファ
+			ID3D11Buffer* pVertexBuffer;	// 頂点バッファ
+			ID3D11Buffer* pIndexBuffer;	// インデックスバッファ
 			std::vector<CustomVERTEX> vertex;
 			std::vector<UINT> index;
 			std::string materialName;
 
 			// コンストラクタで初期化
 			MeshData()
-				:pVertexBuffer_(nullptr)
-				,pIndexBuffer_(nullptr)
+				:pVertexBuffer(nullptr)
+				,pIndexBuffer(nullptr)
 				,vertex()
 				,index() {
 			}
 
 			// デストラクタ
 			~MeshData() {
-				SAFE_RELEASE(pVertexBuffer_);
-				SAFE_RELEASE(pIndexBuffer_);
+				SAFE_RELEASE(pVertexBuffer);
+				SAFE_RELEASE(pIndexBuffer);
 			}
 		};
 
-		std::vector<MeshData> meshList;
-		std::map<std::string, Material> materialList;
+		std::vector<MeshData> meshList_;
+		std::map<std::string, Material> materialList_;
+		std::map<std::string, ID3D11ShaderResourceView*> textures_;
+		std::map<std::string, ID3D11ShaderResourceView*> materialLinks_;
 
 		// FBXファイルの読み込み
 		bool LoadFbxFile(std::string fileName);
@@ -108,6 +110,8 @@ namespace CoreEngine {
 
 		// マテリアルの読み込み
 		void LoadMaterial(FbxSurfaceMaterial* material);
+		// テクスチャの読み込み
+		bool LoadTexture(FbxFileTexture* texture, std::string& keyword);
 
 		// メッシュを作成
 		void CreateMesh(FbxMesh* mesh);
@@ -121,7 +125,8 @@ namespace CoreEngine {
 		void LoadUV(MeshData& meshData, FbxMesh* mesh);
 		// 頂点カラー読み込み
 		void LoadColor(MeshData& meshData, FbxMesh* mesh);
-
+		// マテリアル名読み込み
+		void SetMaterialName(MeshData& meshData, FbxMesh* mesh);
 
 	};
 }
